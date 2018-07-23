@@ -1,0 +1,26 @@
+#!/bin/bash
+#title           :delete_node_from_torque
+#description     :This script will remove a compute node from the cluster and will wait until all jobs are finished
+#author          :Maximilian Hanussek
+#date            :2018-01-29
+#version         :1.0
+#usage           :sh delete_node_from_torque HOSTNAME_REMOVING_NODE
+#notes           :Needs one parameter: hostname of the node to be removed
+#bash_version    :4.2.46(1)-release
+#==========================================================================================================================================================================================
+
+HOSTNAME_REMOVING_NODE=$1                                                           #Get Hostname of the adding node
+
+sudo env "PATH=$PATH" pbsnodes -o $HOSTNAME_REMOVING_NODE                           #Set Removing node offline, no new jobs will be set
+
+while true; do
+  NODE_STATE=$(sudo env "PATH=$PATH" qstat -tnr1 | grep -c $HOSTNAME_REMOVING_NODE) #Check if jobs are still running on the removing node
+  if [[ $NODE_STATE == "0" ]]; then                                                 #If the removing node is not found in the running jobs queue, terminate loop
+    echo "Node is empty"
+    break
+  fi
+  echo "Node is in use by " $NODE_STATE "jobs, waiting for termination"             #Wait if number of occurences is greater 0 of running jobs
+  sleep 120                                                                         #Check every 2min
+done
+
+sudo env "PATH=$PATH" qmgr -c "delete node $HOSTNAME_REMOVING_NODE"                 #Remove node from torque cluster, pbs_mom process is still running on compute node

@@ -1,0 +1,16 @@
+#!/bin/bash
+#title           :add_node_to_torque_cluster
+#description     :This script will add a compute node to the cluster without any downtime
+#author          :Maximilian Hanussek
+#date            :2018-01-29
+#version         :1.0
+#usage           :sh add_node_to_torque HOSTNAME_ADDED_NODE SSH_KEY_PATH
+#notes           :Needs two parameter: hostname of the new node and path to the SSH key of the new node
+#bash_version    :4.2.46(1)-release
+#============================================================================================================================================================================
+
+HOSTNAME_ADDED_NODE=$1                                              #Get Hostname of the node to be added
+SSH_KEY_PATH=$2                                                     #Get file path to the SSH Key of the added compute node
+
+sudo env "PATH=$PATH" qmgr -c "create node $HOSTNAME_ADDED_NODE"    #Add node to the cluster
+sudo env "PATH=$PATH" qmgr -c "set server auto_node_np = True"      #Set the correct amount of CPUs automatically

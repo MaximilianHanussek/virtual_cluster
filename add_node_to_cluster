@@ -1,0 +1,27 @@
+#!/bin/bash
+#title           :add_node_to_cluster
+#description     :This script will add a compute node to the cluster without any downtime
+#author          :Maximilian Hanussek
+#date            :2018-01-31
+#version         :1.0
+#usage           :sh add_node_to_cluster IP_ADDED_HOST NAME_ADDED_HOST SSH_KEY_PATH
+#notes           :Needs three parameter: IP of the new node, hostname of the new node and path to the SSH key of the new node
+#bash_version    :4.2.46(1)-release
+#============================================================================================================================================================================
+
+IP_ADDED_HOST=$1                                                        #Get IP address of new host
+NAME_ADDED_HOST=$2                                                      #Get hostname of new node
+SSH_KEY_PATH=$3                                                         #Get path to ssh key of new node
+
+echo "Updating Hostfiles"
+add_to_host_file $IP_ADDED_HOST $NAME_ADDED_HOST $SSH_KEY_PATH          #Execute add_to_host_file script (/usr/local/bin/) to update the /etc/hosts file
+
+MGMT_IP=$(head -n 1 /home/centos/beeond_nodefile)                       #Get IP of the management node of the beegfs filesystem
+echo $MGMT_IP > /home/centos/beeond_nodefile2                           #Write management IP to file
+echo $IP_ADDED_HOST >> /home/centos/beeond_nodefile2                    #Add new node IP to same file
+
+echo "Adding node to beegfs filesystem"
+/opt/beegfs/sbin/beeond-add-storage-node start -n /home/centos/beeond_nodefile2 -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos #Start beeond script and add node to existing beegfs filesystem
+
+echo "Adding node to torque cluster"
+add_node_to_torque $NAME_ADDED_HOST $SSH_KEY_PATH                       #Execute add_node_to_torque script (/usr/local/bin) to make torque aware of the new node

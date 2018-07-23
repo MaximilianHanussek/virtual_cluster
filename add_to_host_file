@@ -1,0 +1,30 @@
+#!/bin/bash
+#title           :add_to_host_file
+#description     :This script will update the /etc/hosts file on all given nodes
+#author          :Maximilian Hanussek
+#date            :2018-01-31
+#version         :1.0
+#usage           :sh add_to_host_file NODE_IP_ADD NODE_NAME_ADDED SSH_KEY_PATH
+#notes           :Needs three parameter: IP of the new node, hostname of the new node and path to the SSH key of the new node
+#bash_version    :4.2.46(1)-release
+#============================================================================================================================================================================
+
+NODE_IP_ADD=$1                                                                          #Get IP address of the new node
+NODE_NAME_ADD=$2                                                                        #Get hostname of the new node
+SSH_KEY_PATH=$3                                                                         #Get path to ssh key of the new node
+
+echo "Set hostname permanently"
+ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$NODE_IP_ADD NODE_NAME_ADD=$NODE_NAME_ADD "sudo hostnamectl set-hostname $NODE_NAME_ADD"
+
+echo $NODE_IP_ADD $NODE_NAME_ADD | sudo tee -a /etc/hosts > /dev/null                   #Append the new entry of IP address and hostname to the /etc/hosts file of the masternode
+
+cat /etc/hosts | awk '{print $1}' > /home/centos/host_ip_list                           #Get the list of all known nodes on the masternode
+
+while read host_ip; do                                                                  #Iterate over all IPs of the list generated above
+        if ! [[ $host_ip == "127.0.0.1" || $host_ip == "::1" || $host_ip == "" ]];      #Exclude uninteresting stuff from the hosts file 
+        then
+                scp -i $SSH_KEY_PATH /etc/hosts centos@$host_ip:/home/centos            #Copy hosts file from masternode to home directory of new node
+                ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_ip sudo mv /home/centos/hosts /etc/hosts       # replace old hosts file with new file, two steps are necessary to permissions
+        fi
+done </home/centos/host_ip_list                                                         #Give file as input for the loop
+rm /home/centos/host_ip_list                                                            #Delete generated host_ip_list

@@ -1,0 +1,67 @@
+#!/bin/bash
+
+#title           :configure_unicore
+#description     :This script will configure and start the UNICORE components
+#author          :Maximilian Hanussek
+#date            :2018-02-08
+#version         :1.0
+#usage           :sh configure_unicore MASTER_NODE_IP TOTAL_CPUS_MAX NODE_CPUS_MAX NODE_MEM_MAX NODES_MAX
+#notes           :Needs five parameter: IP of the master node, Sum of total CPUs, Maximum of CPUs per node, Maximum of RAM per node (in Bytes), Maximum number of nodes
+#bash_version    :4.2.46(1)-release
+#============================================================================================================================================================================
+
+MASTER_NODE_IP=$1                                                                       #Get master node IP (unicore-master)
+TOTAL_CPUS_MAX=$2                                                                       #Get number of CPUs of total cluster
+NODE_CPUS_MAX=$3                                                                        #Get maximal number of CPUs per node
+NODE_MEM_MAX=$4                                                                         #Get maximal number of RAM per node (in Bytes!)
+NODE_MEM_DEFAULT=$NODE_MEM_MAX                                                          #Set value of maximal RAM per node also as default
+NODES_MAX=$5                                                                            #Get the maximal number of nodes in the cluster
+
+REGISTRY_URL="https://$MASTER_NODE_IP:8080/REGISTRY/services/Registry?res=default_registry" #Set Registry URL accessing cluster from outside
+WORKFLOW_GATEWAY="https://$MASTER_NODE_IP:8098"                                             #Set Workflow gateway URL
+SERVORCH_GATEWAY="https://$MASTER_NODE_IP:7701"                                             #Set Serverorchestration gateway URL
+
+PROPERTIES_FILE_SERVER=/usr/local/unicore-servers-7.9.0/configure.properties                #Set path to UNICORE servers configuration file
+PROPERTIES_FILE_WORKFLOW=/usr/local/unicore-workflow-7.9.1/configure.properties             #Set path to UNIcore workflow configuration file
+PROPERTIES_FILE_CONNECTIONS_GATEWAY=/usr/local/unicore-servers-7.9.0/gateway/conf/connections.properties    #Set path to gateway connections property path
+
+### UNICORE SERVER CONFIGURATION ###
+#Set the correct configvalues in the corresponding configuration file#
+sudo sed -i "/^gwHost=/c\gwHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxHost=/c\uxHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxTotalCPUsMax=/c\uxTotalCPUsMax=$TOTAL_CPUS_MAX" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxCPUsPerNodeMax=/c\uxCPUsPerNodeMax=$NODE_CPUS_MAX" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxMemoryPerNodeMax=/c\uxMemoryPerNodeMax=$NODE_MEM_MAX" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxMemoryPerNodeDefault=/c\uxMemoryPerNodeDefault=$NODE_MEM_DEFAULT" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxNodesMax/c\uxNodesMax=$NODES_MAX" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^tsiHost=/c\tsiHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^xuudbHost=/c\xuudbHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^registryHost=/c\registryHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+
+### UNICORE WORKFLOW CONFIGURATION ###
+#Set the correct configvalues in the corresponding configuration file#
+sudo sed -i "/^gwHost=/c\gwHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^wfHost=/c\wfHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^soHost=/c\soHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^urlExternalRegistry=/c\urlExternalRegistry=$REGISTRY_URL" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^xuudbHost=/c\xuudbHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
+
+cd /usr/local/unicore-servers-7.9.0/            #Change into unicore-servers directory
+sudo ./configure.py unicore $MASTER_NODE_IP     #Run configure.py script
+
+### Make UNICORE server component aware of the workflow component ###
+sudo -u unicore bash -c "echo 'WORKFLOW = $WORKFLOW_GATEWAY' >> $PROPERTIES_FILE_CONNECTIONS_GATEWAY" 
+sudo -u unicore bash -c "echo 'SERVORCH = $SERVORCH_GATEWAY' >> $PROPERTIES_FILE_CONNECTIONS_GATEWAY"
+
+### Install/Copy all files to the correct directory ###
+sudo ./install.py                               #Run install.py script (might throw an error, which does not matter)
+
+#Change use pf system python (2.7.5), to additional installed version of python >= 2.7.6 (required by UNICORE tsi)
+sudo sed -i '/nohup/c\nohup /usr/local/bin/python2.7 $PY/TSI.py $PARAM > ${STARTLOG} 2>&1  & echo $! > ${PID}' /usr/local/unicore-servers-7.9.0/tsi_selected/bin/start.sh
+sudo -u unicore sh -c "/usr/local/unicore-servers-7.9.0/start.sh"                   #Start all UNICORE server components (as user unicore)
+sudo -u root sh -c "/usr/local/unicore-servers-7.9.0/tsi_selected/bin/start.sh"     #Start tsi (as user root)
+
+cd /usr/local/unicore-workflow-7.9.1/           #Change into unicore-workflow directory
+sudo ./configure.py unicore                     #Run configure.py script
+sudo ./install.py                               #Run install.py script (might answer that nothing is to do)
+sudo -u unicore sh -c "/usr/local/unicore-workflow-7.9.1/start-workflow.sh" #Start all UNICORE workflow components (as user unicore)

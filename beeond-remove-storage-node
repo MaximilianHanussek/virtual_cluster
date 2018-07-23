@@ -1,0 +1,59 @@
+#!/bin/bash
+#title           :beeond-remove-storage-node
+#description     :This script will remove a storage node from an existing beegfs filesystem without downtime and migrate the data of the removed storage node
+#author          :Maximilian Hanussek
+#date            :2018-01-26
+#version         :1.0
+#usage           :sh beeond-remove-storage-node STORAGE_NODE_HOST_NAME BEEOND_MANAGEMENT_HOST SSH_KEY_PATH
+#notes           :Needs three parameter: hostname of the node, name or ip of the management host and path to the ssh key of the node to be removed
+#bash_version    :4.2.46(1)-release
+#=============================================================================================================================================================================================================
+
+# Get information about the hostname of the node to be removed (NODE_NAME), managment host of the beeond filesystem (MGMTD_HOST) and the path to the SSH key for the node to remove (SSH_KEY_PATH)
+NODE_NAME=$1
+MGMTD_HOST=$2
+SSH_KEY_PATH=$3
+
+# Get the beegfs specific node id and the target id
+BEEGFS_NODE_ID=$(beegfs-ctl --listnodes --nodetype=storage --sysMgmtdHost=$MGMTD_HOST | grep $NODE_NAME | awk '{print substr($3, 1, length($3)-1)}')	#Parse out beegfs node ID to be removed 
+BEEGFS_TARGET_ID=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$NODE_NAME cat /mnt/beegfs-storage/targetNumID)	   #Parse out beegfs storage target ID to be removed
+
+# Place the free_space.override file in /mnt/beegfs-storage/ with value zero to prevent new data on this target
+ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$NODE_NAME "echo 0 > /mnt/beegfs-storage/free_space.override"	   #Create file to make beegfs aware to not use storage target anymore
+echo "Storage target is blocked."
+
+# Check and wait until the storage target is in the emergency pool and no new data can be written on it
+while true; do
+  POOL_STATE=$(beegfs-df -p /beeond/ | awk -v BEEGFS_TARGET_ID=$BEEGFS_TARGET_ID '$1 == BEEGFS_TARGET_ID' | awk '{print $2}')	   #Parse out the state of the storage target (normal, low, emergency)
+  if [[ $POOL_STATE == "emergency" ]]; then											   #Check if target is in state emergency or not
+    echo "Node is now in emergency pool and no new data is written to it."							   #If in state emergency stop the loop and start migration process
+    break
+  fi
+  echo "Pool is in state" $POOL_STATE ", waiting to change into state emergency" 						   #If not in state emergency wait 10s and check again
+  sleep 10
+done
+
+# Start the migration of the data residing on the blocked target which should be removed
+MIGARTING_DISK_SPACE=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$NODE_NAME df | grep mnt | awk '{print $3}')	   #Parse out the amount of diskspace needed to migrate with normal df command  
+DISAPPEARING_DISK_SPACE=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$NODE_NAME df | grep mnt | awk '{print $2}')  #Parse out the amount of diskspace needed that will vanish  
+BEFORE_REMOVAL_AVAILABLE_BEEOND_SPACE=$(df | grep beegfs_ondemand | awk '{print $4}')						   #Parse out the amount of the remaining diskspace
+AFTER_REMOVAL_AVAILABLE_BEEOND_SPACE=$(expr $BEFORE_REMOVAL_AVAILABLE_BEEOND_SPACE - $DISAPPEARING_DISK_SPACE)			   #Calculate the amount of the effective remaining space
+
+# Check if enough space is left for the data that should be migrated
+if [[ $AFTER_REMOVAL_AVAILABLE_BEEOND_SPACE -gt $MIGRATING_DISK_SPACE ]]; 				#Check that migration space is lower than available space
+then
+        echo "Migration is started"
+	beegfs-ctl --migrate --nodeid=$BEEGFS_NODE_ID --sysMgmtdHost=$MGMTD_HOST /beeond/		#Start migration of the data
+	echo "Migration is finished"
+else
+	echo "Migration not possible, not enough space on target volume, please free some space."	#Do not start migration if not enough space is available
+	exit 0
+fi
+
+# Remove node from the beeond shared filesystem
+sudo beegfs-ctl --removenode --nodetype=storage --sysMgmtdHost=$MGMTD_HOST $BEEGFS_NODE_ID		#Remove node from shared filesystem (root access required)
+
+# Stop beeond processes on the removed node and delete remaining data
+echo $NODE_NAME > /home/centos/beeond_remove_nodefile							#Create temporary nodefile for the node to remove
+beeond stop -n /home/centos/beeond_remove_nodefile -L -d -a $SSH_KEY_PATH -z centos			#Stop beeond processes on node 
+rm /home/centos/beeond_remove_nodefile									#Delete temporary nodefile 

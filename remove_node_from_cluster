@@ -1,0 +1,23 @@
+#!/bin/bash
+#title           :delete_node_from_cluster (wrapper script)
+#description     :This script will remove the given node from the cluster
+#author          :Maximilian Hanussek
+#date            :2018-01-31
+#version         :1.0
+#usage           :sh delete_node_from_cluster NODE_NAME_REMOVED SSH_KEY_PATH
+#notes           :Needs two parameter: hostname of the node and path to the ssh key of the node to be removed
+#bash_version    :4.2.46(1)-release
+#=============================================================================================================================================================================================================
+
+NODE_NAME_REMOVED=$1                                                                            #Get hostname of the node which has to be removed
+SSH_KEY_PATH=$2                                                                                 #Get path to the SSH key of the removing VM
+MGMT_IP=$(head -n 1 /home/centos/beeond_nodefile)                                               #Parse out the management node IP of the beegfs filesystem 
+
+echo "Removing node from torque"
+delete_node_from_torque $NODE_NAME_REMOVED                                                      #Run script to remove the node from torque
+        
+echo "Removing node from beegfs filesystem (BeeOND)"
+sudo /opt/beegfs/sbin/beeond-remove-storage-node $NODE_NAME_REMOVED $MGMT_IP $SSH_KEY_PATH      #Run script to remove the node from the beegfs filesystem 
+
+echo "Updating hosts files"
+delete_from_host_file $NODE_NAME_REMOVED $SSH_KEY_PATH                                          #Run script to update the /etc/hosts files of all nodes and clear it for the deleted node 

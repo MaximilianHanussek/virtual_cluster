@@ -1,0 +1,32 @@
+#!/bin/bash
+#title           :delete_from_host_file
+#description     :This script will remove the /etc/hosts entry of the given node from the other participating nodes and cleans up the hosts file of the given node
+#author          :Maximilian Hanussek
+#date            :2018-01-31
+#version         :1.0
+#usage           :sh delete_from_host_file NODE_NAME_DELETION SSH_KEY_PATH
+#notes           :Needs two parameter: hostname of the node and path to the ssh key of the node to be removed
+#bash_version    :4.2.46(1)-release
+#=============================================================================================================================================================================================================
+
+NODE_NAME_DELETION=$1                                                                   #Get hostname of the node to be deleted
+SSH_KEY_PATH=$2                                                                         #Get path to ssh key of the node to be removed and the other nodes
+NODE_IP_DELETION=$(getent hosts $NODE_NAME_DELETION | awk '{print $1}')                 #Parse out the corresponding IP from the hostname of the node to be deleted
+
+cat /etc/hosts | awk '{print $1}' > /home/centos/host_ip_list                           #Generate list of IPs from the masternode's /etc/hosts file 
+
+while read node_ip; do                                                                  #Iterate over all IPs in the file generated above
+        if ! [[ $node_ip == "127.0.0.1" || $node_ip == "::1" || $node_ip == "" ]];      #Exclude unnecessary entries in the etc/hosts file
+        then
+                if [ $node_ip != $NODE_IP_DELETION ];                                   #Check if IP of current iteration is not the IP which should be deleted 
+                then
+                        ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$node_ip NODE_NAME_DELETION=$NODE_NAME_DELETION "sudo sed -i '/$NODE_NAME_DELETION/d' /etc/hosts" #Delete line with IP 
+                else
+                        #Replace whole /etc/hosts file of node to be deleted and set standard values
+                        ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$node_ip "echo '127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4' > /home/centos/hosts"
+                        ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$node_ip "echo '::1         localhost localhost.localdomain localhost6 localhost6.localdomain6' >> /home/centos/hosts"
+                        ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$node_ip  sudo mv /home/centos/hosts /etc/hosts
+                fi
+        fi
+done </home/centos/host_ip_list                                                         #Input for the read function of the while loop (list of IPs)
+rm /home/centos/host_ip_list                                                            #Delete list of IPs
