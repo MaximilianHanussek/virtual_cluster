@@ -11,7 +11,7 @@
 #============================================================================================================================================================================
 
 SSH_KEY_PATH=$1                                                                         #Get path to SSH key of compute nodes
-MASTER_NODE_IP=$2                                                                       #Get master node IP (unicore-master)
+MASTER_NODE_IP=$2                                                                       #Get master node IP (vuc-master)
 TOTAL_CPUS_MAX=$3                                                                       #Get number of CPUs of total cluster
 NODE_CPUS_MAX=$4                                                                        #Get maximal number of CPUs per node
 NODE_MEM_MAX=$5                                                                         #Get maximal number of RAM per node (in Bytes!)
@@ -57,7 +57,7 @@ sudo systemctl start trqauthd                                                   
 sudo env "PATH=$PATH" pbs_sched                                                     #Start pbs_sched (Scheduler) component
 
 while read host_name; do                                                            #Iterate over the list of hostnames
-	if ! [[ $host_name == "localhost" || $host_name == "unicore-master" || $host_name == "" ]];	#Exclude uninteresting stuff from the hosts file 
+	if ! [[ $host_name == "localhost" || $host_name == "vuc-master" || $host_name == "" ]];	#Exclude uninteresting stuff from the hosts file 
 	then
 		sudo env "PATH=$PATH" qmgr -c "create node $host_name"		   	                                    #Add node to the cluster
 		ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_name sudo systemctl enable pbs_mom #Enable torque pbs_mom component on compute nodes
