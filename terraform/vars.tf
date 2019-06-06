@@ -1,6 +1,9 @@
 variable "beeond_disk_size" {
-  default = 3
+  default = 10
 }
+
+variable "beeond_storage_backend" {
+  default = "quobyte_hdd"
 
 variable "flavors" {
   type = "map"

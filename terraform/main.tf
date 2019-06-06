@@ -1,3 +1,10 @@
+resource "openstack_blockstorage_volume_v2" "beeond_volume_master" {
+  name = "${var.name_prefix}beeond_volume_master"
+  size = "${var.beeond_disk_size}"
+  volume_type = "${var.beeond_storage_backend}"
+}
+
+
 resource "openstack_compute_instance_v2" "master" {
   name            = "${var.name_prefix}master"
   flavor_name     = "${var.flavors["master"]}"
@@ -5,6 +12,23 @@ resource "openstack_compute_instance_v2" "master" {
   key_pair        = "${openstack_compute_keypair_v2.my-cloud-key.name}"
   security_groups = "${var.security_groups}"
   network         = "${var.network}"
+
+#block_device {
+#    uuid                  = "${openstack_images_image_v2.vuc-image-master.id}"
+#    source_type           = "image"
+#    destination_type      = "local"
+#    boot_index            = 0
+#    delete_on_termination = true
+#  }
+
+block_device {
+    uuid                  = "${openstack_blockstorage_volume_v2.beeond_volume_master.id}"
+    source_type           = "blank"
+    destination_type      = "volume"
+    boot_index            = 0
+    delete_on_termination = true
+  }
+
 }
 
 resource "openstack_compute_instance_v2" "compute" {
