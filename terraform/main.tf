@@ -36,6 +36,16 @@ block_device {
     delete_on_termination = true
   }
 
+  provisioner "remote-exec" {
+    script = "mount_cinder_volumes.sh"
+
+    connection {
+      type        = "ssh"
+      private_key = file("${var.private_key_path}")
+      user        = "centos"
+      timeout     = "2m"
+    }
+  }
 }
 
 resource "openstack_compute_instance_v2" "compute" {
@@ -62,6 +72,17 @@ block_device {
     destination_type      = "volume"
     boot_index            = -1
     delete_on_termination = true
+  }
+  
+  provisioner "remote-exec" {
+    script = "mount_cinder_volumes.sh"
+    
+    connection {
+      type        = "ssh"
+      private_key = file("${var.private_key_path}")
+      user        = "centos"
+      timeout     = "2m"
+    }
   }
 }
 
