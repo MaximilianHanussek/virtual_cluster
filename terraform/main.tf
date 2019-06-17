@@ -41,12 +41,37 @@ block_device {
 
     connection {
       type        = "ssh"
-      private_key = file("${var.private_key_path}")
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "2m"
+    }
+  }
+
+  provisioner "file" {
+    content = "${tls_private_key.internal_connection_key.private_key_pem}"
+    destination = "~/.ssh/connection_key.pem"  
+  
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "2m"
+    }
+  } 
+
+  provisioner "remote-exec" {
+    script = "public_key_to_authorized_key_file.sh"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "2m"
     }
   }
 }
+
+
 
 resource "openstack_compute_instance_v2" "compute" {
   count           = "${var.compute_node_count}"
@@ -79,7 +104,30 @@ block_device {
     
     connection {
       type        = "ssh"
-      private_key = file("${var.private_key_path}")
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "2m"
+    }
+  }
+
+  provisioner "file" {
+    content     = "${tls_private_key.internal_connection_key.private_key_pem}"
+    destination = "~/.ssh/connection_key.pem"
+    
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "2m"
+    }
+  }
+  
+  provisioner "remote-exec" {
+    script = "public_key_to_authorized_key_file.sh"
+    
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "2m"
     }
