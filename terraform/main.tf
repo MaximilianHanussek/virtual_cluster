@@ -43,7 +43,7 @@ block_device {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
-      timeout     = "2m"
+      timeout     = "5m"
     }
   }
 
@@ -55,7 +55,7 @@ block_device {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
-      timeout     = "2m"
+      timeout     = "5m"
     }
   } 
 
@@ -66,12 +66,25 @@ block_device {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
-      timeout     = "2m"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "echo '${openstack_compute_instance_v2.master.access_ip_v4} ${var.name_prefix}master' >> /etc/hosts",
+      "echo '${openstack_compute_instance_v2.compute.0.access_ip_v4} ${var.name_prefix}compute-node-0' >> /etc/hosts",
+      "echo '${openstack_compute_instance_v2.compute.1.access_ip_v4} ${var.name_prefix}compute-node-1' >> /etc/hosts"
+    ]
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
     }
   }
 }
-
-
 
 resource "openstack_compute_instance_v2" "compute" {
   count           = "${var.compute_node_count}"
@@ -106,7 +119,7 @@ block_device {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
-      timeout     = "2m"
+      timeout     = "5m"
     }
   }
 
@@ -118,7 +131,7 @@ block_device {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
-      timeout     = "2m"
+      timeout     = "5m"
     }
   }
   
@@ -129,7 +142,7 @@ block_device {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
-      timeout     = "2m"
+      timeout     = "5m"
     }
   }
 }
