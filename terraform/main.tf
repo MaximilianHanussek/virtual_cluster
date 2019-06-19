@@ -84,6 +84,43 @@ block_device {
       timeout     = "5m"
     }
   }
+  
+  provisioner "file" {
+    source = "../configure_unicore"
+    destination = "/usr/local/bin/configure_unicore"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../start_initial_unicore_cluster"
+    destination = "/usr/local/bin/start_initial_unicore_cluster"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "start_initial_unicore_cluster"
+    ]
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
 }
 
 resource "openstack_compute_instance_v2" "compute" {

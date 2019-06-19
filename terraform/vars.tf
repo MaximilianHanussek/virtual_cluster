@@ -10,7 +10,7 @@ variable "flavors" {
   type = "map"
   default = {
     "master" = "de.NBI default disc"
-    "compute" = "de.NBI default disc"
+    "compute" = "de.NBI small disc"
   }
 }
 
@@ -48,12 +48,8 @@ variable "private_key_path" {
 }
 
 variable "name_prefix" {
-  default = "vuc-"
+  default = "unicore-"
 }
-
-#variable "name_suffix" {
-#  default = ".usegalaxy.eu"
-#}
 
 variable "security_groups" {
   default = [

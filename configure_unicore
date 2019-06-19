@@ -22,8 +22,9 @@ WORKFLOW_GATEWAY="https://$MASTER_NODE_IP:8098"                                 
 SERVORCH_GATEWAY="https://$MASTER_NODE_IP:7701"                                             #Set Serverorchestration gateway URL
 
 PROPERTIES_FILE_SERVER=/usr/local/unicore-servers-7.9.0/configure.properties                #Set path to UNICORE servers configuration file
-PROPERTIES_FILE_WORKFLOW=/usr/local/unicore-workflow-7.9.1/configure.properties             #Set path to UNIcore workflow configuration file
+PROPERTIES_FILE_WORKFLOW=/usr/local/unicore-workflow-7.9.1/configure.properties             #Set path to UNICORE workflow configuration file
 PROPERTIES_FILE_CONNECTIONS_GATEWAY=/usr/local/unicore-servers-7.9.0/gateway/conf/connections.properties    #Set path to gateway connections property path
+ADDUSER_FILE=/usr/local/unicore-servers-7.9.0/adduser.sh			            #Set path to adduser.sh file used by xuudb
 
 ### UNICORE SERVER CONFIGURATION ###
 #Set the correct configvalues in the corresponding configuration file#
@@ -56,8 +57,12 @@ sudo -u unicore bash -c "echo 'SERVORCH = $SERVORCH_GATEWAY' >> $PROPERTIES_FILE
 ### Install/Copy all files to the correct directory ###
 sudo ./install.py                               #Run install.py script (might throw an error, which does not matter)
 
-#Change use pf system python (2.7.5), to additional installed version of python >= 2.7.6 (required by UNICORE tsi)
+#Change use of system python (2.7.5), to additional installed version of python >= 2.7.6 (required by UNICORE tsi)
 sudo sed -i '/nohup/c\nohup /usr/local/bin/python2.7 $PY/TSI.py $PARAM > ${STARTLOG} 2>&1  & echo $! > ${PID}' /usr/local/unicore-servers-7.9.0/tsi_selected/bin/start.sh
+
+#Add -f flag for rm command to run it without interaction
+sudo sed -i "/^rm/c\rm -f FIRST_START" $ADDUSER_FILE
+
 sudo -u unicore sh -c "/usr/local/unicore-servers-7.9.0/start.sh"                   #Start all UNICORE server components (as user unicore)
 sudo -u root sh -c "/usr/local/unicore-servers-7.9.0/tsi_selected/bin/start.sh"     #Start tsi (as user root)
 

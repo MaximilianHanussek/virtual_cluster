@@ -10,14 +10,30 @@
 #bash_version    :4.2.46(1)-release
 #============================================================================================================================================================================
 
-SSH_KEY_PATH=$1                                                                         #Get path to SSH key of compute nodes
-MASTER_NODE_IP=$2                                                                       #Get master node IP (vuc-master)
-TOTAL_CPUS_MAX=$3                                                                       #Get number of CPUs of total cluster
-NODE_CPUS_MAX=$4                                                                        #Get maximal number of CPUs per node
-NODE_MEM_MAX=$5                                                                         #Get maximal number of RAM per node (in Bytes!)
-NODE_MEM_DEFAULT=$NODE_MEM_MAX                                                          #Set value of maximal RAM per node also as default
-NODES_MAX=$6                                                                            #Get the maximal number of nodes in the cluster
+SSH_KEY_PATH="/home/centos/.ssh/connection_key.pem"									#Get path to SSH key of compute nodes	
+MASTER_NODE_IP="$(cat /etc/hosts | grep master | awk {'print $1'})"							#Get master node IP (unicore-master)
+NODES_MAX="$(cat /etc/hosts | grep -c compute)"										#Get the maximal number of nodes in the cluster
+NODE_CPUS_MAX=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@unicore-compute-node-0 nproc)	#Get maximal number of CPUs per node
+TOTAL_CPUS_MAX="$(expr $NODE_CPUS_MAX \* $NODES_MAX)"									#Get number of CPUs of total cluster
+NODE_MEM_TOTAL=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@unicore-compute-node-0 free -b | grep "Mem:" | awk {'print $2'})	#Get maximal number of RAM per node (in Bytes!)
+ONE_GB_IN_BYTE=1073741824												#Save value for 1GB in Bytes (Base 1024)
+NODE_MEM_MAX="$(expr $NODE_MEM_TOTAL - $ONE_GB_IN_BYTE)"									#Get final max RAM value with 1GB safety
+NODE_MEM_DEFAULT=$NODE_MEM_MAX                                                          				#Set value of maximal RAM per node also as default
 
+echo "NODES_MAX $NODES_MAX"
+echo "NODE_CPUS_MAX $NODE_CPUS_MAX"
+echo "TOTAL_CPUS_MAX $TOTAL_CPUS_MAX"
+echo "NODE_MEM_TOTAL $NODE_MEM_TOTAL"
+echo "NODE_MEM_MAX $NODE_MEM_MAX"
+echo "NODE_MEM_DEFAULT $NODE_MEM_DEFAULT"
+
+
+#SSH_KEY_PATH=$1                                                                         #Get path to SSH key of compute nodes
+#MASTER_NODE_IP=$2                                                                       #Get master node IP (unicore-master)
+#TOTAL_CPUS_MAX=$3                                                                       #Get number of CPUs of total cluster
+#NODE_CPUS_MAX=$4                                                                        #Get maximal number of CPUs per node
+#NODE_MEM_MAX=$5                                                                         #Get maximal number of RAM per node (in Bytes!)
+#NODES_MAX=$6                                                                            #Get the maximal number of nodes in the cluster
 
 ### Configure hostfiles and beeond_file ###
 echo "Configure hostfiles"
@@ -57,7 +73,7 @@ sudo systemctl start trqauthd                                                   
 sudo env "PATH=$PATH" pbs_sched                                                     #Start pbs_sched (Scheduler) component
 
 while read host_name; do                                                            #Iterate over the list of hostnames
-	if ! [[ $host_name == "localhost" || $host_name == "vuc-master" || $host_name == "" ]];	#Exclude uninteresting stuff from the hosts file 
+	if ! [[ $host_name == "localhost" || $host_name == "unicore-master" || $host_name == "" ]];	#Exclude uninteresting stuff from the hosts file 
 	then
 		sudo env "PATH=$PATH" qmgr -c "create node $host_name"		   	                                    #Add node to the cluster
 		ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_name sudo systemctl enable pbs_mom #Enable torque pbs_mom component on compute nodes
