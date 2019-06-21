@@ -24,5 +24,8 @@ The following information will help you to setup and use the virtual UNICORE clu
 
 ### 1. Download/clone the git repository
 In order to use the sources you need to download or clone this git repository to your local machine.
-<pre>git clone </pre>
+<pre>git clone https://github.com/MaximilianHanussek/virtual_cluster.git</pre>
+
+You can also download it as a ZIP archive from the website of the repository or via `wget`
+<pre>wget </pre>
 
