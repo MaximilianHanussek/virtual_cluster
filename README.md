@@ -27,5 +27,55 @@ In order to use the sources you need to download or clone this git repository to
 <pre>git clone https://github.com/MaximilianHanussek/virtual_cluster.git</pre>
 
 You can also download it as a ZIP archive from the website of the repository or via `wget`
-<pre>wget </pre>
+<pre>wget https://github.com/MaximilianHanussek/virtual_cluster/archive/master.zip</pre>
+you will find it as `master.zip`.
+
+### 2. Source openstack credentials and initialize
+Before we modify the required variables of Terraform for your OpenStack environment you will need 
+to source your openstack credentials as environment variables and initialize Terraform.
+You can simply source your openstack credentials by downloading a so-called openrc file from the OpenStack dashboard also known as Horizon, to your local machine. After you have done that source it with the following command
+<pre>source /path/to/rc/file</pre>
+
+Normally you should be asked for your password. Enter it and comfirm with enter. You will get no response, but you can check if everything worked well if you have the openstack client installed by running the following command
+<pre>openstack image list</pre>
+After that you should see a list of images that are available in your project.
+
+Further we need to initialize Terraform. Therefore change into the `terraform` directory of the downloaded git repo and run
+<pre>terraform init</pre>
+
+If everything worked out you should see the following output:
+<pre>Initializing provider plugins...
+
+The following providers do not have any version constraints in configuration,
+so the latest version was installed.
+
+To prevent automatic upgrades to new major versions that may contain breaking
+changes, it is recommended to add version = "..." constraints to the
+corresponding provider blocks in configuration, with the constraint strings
+suggested below.
+
+* provider.openstack: version = "~> 1.19"
+* provider.tls: version = "~> 2.0"
+
+Terraform has been successfully initialized!
+
+You may now begin working with Terraform. Try running "terraform plan" to see
+any changes that are required for your infrastructure. All Terraform commands
+should now work.
+
+If you ever set or change modules or backend configuration for Terraform,
+rerun this command to reinitialize your working directory. If you forget, other
+commands will detect it and remind you to do so if necessary.
+</pre>
+
+### 3. Configure terraform variables
+
+
+
+
+
+
+
+
+
 
