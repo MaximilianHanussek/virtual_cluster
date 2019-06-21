@@ -14,9 +14,10 @@ resource "openstack_blockstorage_volume_v2" "beeond_volume_compute" {
 
 resource "openstack_compute_instance_v2" "master" {
   name            = "${var.name_prefix}master"
-  flavor_name     = "${var.flavors["master"]}"
+  flavor_name     = "${var.flavors["compute"]}"
   image_id        = "${openstack_images_image_v2.vuc-image-master.id}"
-  key_pair        = "${openstack_compute_keypair_v2.my-cloud-key.name}"
+#  key_pair        = "${openstack_compute_keypair_v2.my-cloud-key.name}"
+  key_pair        = "${var.openstack_key_name}"
   security_groups = "${var.security_groups}"
   network         = "${var.network}"
 
@@ -128,7 +129,8 @@ resource "openstack_compute_instance_v2" "compute" {
   name            = "${var.name_prefix}compute-node-${count.index}"
   flavor_name     = "${var.flavors["compute"]}"
   image_id        = "${openstack_images_image_v2.vuc-image-compute.id}"
-  key_pair        = "${openstack_compute_keypair_v2.my-cloud-key.name}"
+#  key_pair        = "${openstack_compute_keypair_v2.my-cloud-key.name}"
+  key_pair        = "${var.openstack_key_name}"
   security_groups = "${var.security_groups}"
   network         = "${var.network}"
 
