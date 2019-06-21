@@ -22,3 +22,7 @@ In order to setup VALET you need to fulfill the following prerequisites
 ## Installation and Usage
 The following information will help you to setup and use the virtual UNICORE cluster
 
+### 1. Download/clone the git repository
+In order to use the sources you need to download or clone this git repository to your local machine.
+<pre>git clone </pre>
+
