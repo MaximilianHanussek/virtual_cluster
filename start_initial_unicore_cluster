@@ -2,8 +2,8 @@
 #title           :start_initial_unicore_cluster
 #description     :This script will configure and start the initial unicore cluster
 #author          :Maximilian Hanussek
-#date            :2018-02-08
-#version         :1.0
+#date            :2019-06-19
+#version         :1.2
 #usage           :sh start_initial_unicore_cluster SSH_KEY_PATH MASTER_NODE_IP TOTAL_CPUS_MAX NODE_CPUS_MAX NODE_MEM_MAX NODES_MAX
 #notes           :Needs six parameter: Path to the SSH key of the compute nodes, IP of the master node, Sum of total CPUs, Maximum of CPUs per node,
 #notes           :Maximum of RAM per node (in Bytes), Maximum number of nodes
@@ -19,21 +19,6 @@ NODE_MEM_TOTAL=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@unic
 ONE_GB_IN_BYTE=1073741824												#Save value for 1GB in Bytes (Base 1024)
 NODE_MEM_MAX="$(expr $NODE_MEM_TOTAL - $ONE_GB_IN_BYTE)"									#Get final max RAM value with 1GB safety
 NODE_MEM_DEFAULT=$NODE_MEM_MAX                                                          				#Set value of maximal RAM per node also as default
-
-echo "NODES_MAX $NODES_MAX"
-echo "NODE_CPUS_MAX $NODE_CPUS_MAX"
-echo "TOTAL_CPUS_MAX $TOTAL_CPUS_MAX"
-echo "NODE_MEM_TOTAL $NODE_MEM_TOTAL"
-echo "NODE_MEM_MAX $NODE_MEM_MAX"
-echo "NODE_MEM_DEFAULT $NODE_MEM_DEFAULT"
-
-
-#SSH_KEY_PATH=$1                                                                         #Get path to SSH key of compute nodes
-#MASTER_NODE_IP=$2                                                                       #Get master node IP (unicore-master)
-#TOTAL_CPUS_MAX=$3                                                                       #Get number of CPUs of total cluster
-#NODE_CPUS_MAX=$4                                                                        #Get maximal number of CPUs per node
-#NODE_MEM_MAX=$5                                                                         #Get maximal number of RAM per node (in Bytes!)
-#NODES_MAX=$6                                                                            #Get the maximal number of nodes in the cluster
 
 ### Configure hostfiles and beeond_file ###
 echo "Configure hostfiles"

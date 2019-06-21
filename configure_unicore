@@ -3,8 +3,8 @@
 #title           :configure_unicore
 #description     :This script will configure and start the UNICORE components
 #author          :Maximilian Hanussek
-#date            :2018-02-08
-#version         :1.0
+#date            :2019-06-19
+#version         :1.2
 #usage           :sh configure_unicore MASTER_NODE_IP TOTAL_CPUS_MAX NODE_CPUS_MAX NODE_MEM_MAX NODES_MAX
 #notes           :Needs five parameter: IP of the master node, Sum of total CPUs, Maximum of CPUs per node, Maximum of RAM per node (in Bytes), Maximum number of nodes
 #bash_version    :4.2.46(1)-release
