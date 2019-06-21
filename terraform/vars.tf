@@ -9,7 +9,7 @@ variable "beeond_storage_backend" {
 variable "flavors" {
   type = "map"
   default = {
-    "master" = "de.NBI default disc"
+    "master" = "de.NBI small disc"
     "compute" = "de.NBI small disc"
   }
 }
