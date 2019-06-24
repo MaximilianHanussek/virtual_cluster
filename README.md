@@ -75,16 +75,15 @@ Change into the terraform directory if not already done and open the `vars.tf` f
 #### Variable explanantion
 * beeond_disc_size: Sets the cinder volume size of the volumes attached to the master node and the two compute nodes. The shared file system will have the set size in gigabytes times three, for every participating node. So for 10GB it will 30GB. Set the size according to your needs and available resources.
 * beeond_storage_backend: Sets the name of the storage backend for the cinder volumes, choose the appropriate of your cloud site.
-* flavors:
-* compute_node_count
-* image_master
-* image_compute
-* openstack_key_name
-* private_key_path
-* name_prefix
-* security_groups
-* network
-
+* flavors: Sets the used compute resources (CPUs, RAM, ...) Recommended for the master node are 8 CPUs and at least 16GB RAM.
+* compute_node_count: Sets the number of compute nodes (current configuration works only with two). 
+* image_master: Sets the image to be used for the master node. Will be downloaded automatically. 
+* image_compute: Sets the image to be used for the master node. Will be downloaded automatically.
+* openstack_key_name: Sets the SSH key name of your OpenStack environment (Keypair is required to be set up already). 
+* private_key_path: Sets the path to your private key in order to access the VMs and run configuration scripts.
+* name_prefix: Sets a prefix for the names of the starting VMs
+* security_groups: Sets the names and the security groups itself (do not need be to exist)
+* network: Sets the network to be used
 
 | Variable               | Default value                 | Unit             | Change               |
 | ---------------------- |:-----------------------------:|:----------------:| -------------------- |
