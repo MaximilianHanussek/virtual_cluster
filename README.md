@@ -99,6 +99,39 @@ Change into the terraform directory if not already done and open the `vars.tf` f
 | security_groups        | virtual-unicore-cluster-public|     -            | no                   |
 | network                | denbi_uni_tuebingen_external  |     -            | yes (poss. required) |
 
+### 4. Start Terraform setup
+After the Terraform variables are setup correctly we can go on to start the configuration process.
+In order to do this, change into the `terraform` directory of the Git repository and first run a dry run with
+<pre>terraform plan</pre>
+
+Terraform will now inform you what it will do and checks if the syntax of the terraform files (.tf)a re all correct.
+If an error occur please follow the notes from Terraform and asure that you have sourced your openrc credentials file and initialized the Terraform plugins with `terraform init`.
+
+If everything looks reasonable we can start with the real action executing
+<pre>terraform apply</pre>
+
+This command will first set up the required volumes, then the security group. Afterwards the required images will be downloaded and imported into the OpenStack environment, which can take some time dependent on the network connection (compute image: 1.93GB, master image: 4.40GB). The next step will fire up the VMs and also attaches the cinder volumes. A subsequent script will mount the volumes, create one time SSH keys and distribute them on the different VMs so they can talk with each other without using your general private key for obvious security reasons. In the end the shared file system based on BeeOND will be started, the TORQUE cluster is started and in the end the UNICORE components. All this will take around 5-10 mins.
+In the end you will have a fully setup UNICORE cluster that you can access like explained in Chapter 5.
+But of course you can use just the usual TORQUE batch system without UNICORE and submitting jobs to a queue. 
+
+### 5. Access your UNICORE cluster
+There are different ways to access the UNICORE cluster. One possibility is to use UNICORE Commandline Client (UCC) which can be downloaded [here](https://sourceforge.net/projects/unicore/files/Clients/Commandline%20Client/7.13.0/)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
