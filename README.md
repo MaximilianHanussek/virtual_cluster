@@ -71,12 +71,27 @@ commands will detect it and remind you to do so if necessary.
 ### 3. Configure terraform variables
 In order to start the virtual cluster you will need a few variables we can not set for you.
 Change into the terraform directory if not already done and open the `vars.tf` file. You will find a bunch of defined variables
-but the only ones you need touch are the following:
+but the only ones you need touch are the following. A comprehensive list can be found in the table below:
 
 * Change the names of the flavors for the master node and compute node entry to fitting ones. Do not underestimate the neccessary resources for the master node. Suggestion would be 8GB RAM and 8-16 CPU cores.
 For the compute nodes you can choose what you find appropriate for your purposes.
- 
 
+
+
+| Variable               | Default value | Unit | Meaning | Changeable |
+| ---------------------- |:-------------:|:----:|:-------:| :---------:|
+| beeond_disc_size       |        | |
+| beeond_storage_backend |       | |
+| flavors                |       | |
+| compute_node_count     |    
+| image_master           |
+| image_compute          |
+| openstack_key_name     |
+| public_key             |
+| private_key_path       |
+| name_prefix            |
+| security_groups        |
+| network                |
 
 
 
