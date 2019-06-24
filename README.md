@@ -20,7 +20,7 @@ In order to setup VALET you need to fulfill the following prerequisites
 - Access to remote resources (internet)
 
 ## Installation and Usage
-The following information will help you to setup and use the virtual UNICORE cluster
+The following information will help you to setup and use the virtual UNICORE cluster. This guide is tested for Linux on CentOS7 with Terraform version 0.11.13. 
 
 ### 1. Download/clone the git repository
 In order to use the sources you need to download or clone this git repository to your local machine.
@@ -115,7 +115,26 @@ In the end you will have a fully setup UNICORE cluster that you can access like 
 But of course you can use just the usual TORQUE batch system without UNICORE and submitting jobs to a queue. 
 
 ### 5. Access your UNICORE cluster
-There are different ways to access the UNICORE cluster. One possibility is to use UNICORE Commandline Client (UCC) which can be downloaded [here](https://sourceforge.net/projects/unicore/files/Clients/Commandline%20Client/7.13.0/)
+There are different ways to access the UNICORE cluster. One possibility is to use UNICORE Commandline Client (UCC) which can be downloaded [here](https://sourceforge.net/projects/unicore/files/Clients/Commandline%20Client/7.13.0/). The second possibility is to use the UNICORE Rich Client (URC), you can donwload [here](https://sourceforge.net/projects/unicore/files/Clients/GUI%20Client/7.4.1/). In this instructions we will focus on the second possibility as this is the more convenient one.
+
+In order to use the URC follow the steps below:
+1. Download the URC to your local computer (the same you have started)
+2. Unpack it and start the Application
+3. It will ask your for the credentials, we will use the demo credentials as this is also the user who 
+is already in the UNICORE user database. Please also check to save the password (which is 321 if yopu should forget it).
+4. Afterwards go to the Workbench and add the new Registry by right-clicking into the window titled with `Grid Browser` and choose `Add Registry`. You can freely choose a name and afterwards replace `localhost` with the IP of your master node. You can find this information in the OpenStack dashboard (Horizon) or in Terraform. The rest of the URL needs to stay the same.
+Here an Example:
+<pre><https://42.42.42.42:8080/REGISTRY/services/Registry?res=default_registry/pre>
+
+Now you can start a small test run by submitting a script to the UNICORE cluster for example via the also configured Workflow System. For this purpose create a new workflow project and add a script (v2.2) to the worklfow, connect it with the green play button and enter for example in the script
+<pre>
+whoami
+uname -r
+date</pre>
+
+Click on the play button chose the available worjkflow engine and click on finish. You will see the worklfow running in the Grid Browser window if you unfold the name of Registry you have chosen, the `Workflow engine` and the `Workflows` icon. The output is accessible in the folder `working directory of ...`.
+
+For further complex workflows and further explanations on UNICORE we refer to the official documentation which you can find [here](https://www.unicore.eu/documentation/).
 
 
 
