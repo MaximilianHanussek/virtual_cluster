@@ -70,20 +70,28 @@ commands will detect it and remind you to do so if necessary.
 
 ### 3. Configure terraform variables
 In order to start the virtual cluster you will need a few variables we can not set for you.
-Change into the terraform directory if not already done and open the `vars.tf` file. You will find a bunch of defined variables
-but the only ones you need touch are the following. A comprehensive list can be found in the table below:
+Change into the terraform directory if not already done and open the `vars.tf` file. You will find a bunch of defined variables, a comprehensive list can be found in the table below. The ones you will need to touch for sure are marked with `yes (required)`. The ones you can change but do not have to change are marked with `yes (not required)`. The ones marked with `yes (poss. required)` need to be changed if you are running VALET on a non de.NBI cloud site or even not on the de.NBI cloud site Tübingen. As these values and namnes only exists in these cloud environments. Variables you are not allowed to change are marked with `no`. If you change one of the `no` tagged variables it could or will break the configuration process.
 
-* Change the names of the flavors for the master node and compute node entry to fitting ones. Do not underestimate the neccessary resources for the master node. Suggestion would be 8GB RAM and 8-16 CPU cores.
-For the compute nodes you can choose what you find appropriate for your purposes.
-
+#### Variable explanantion
+* beeond_disc_size: Sets the cinder volume size of the volumes attached to the master node and the two compute nodes. The shared file system will have the set size in gigabytes times three, for every participating node. So for 10GB it will 30GB. Set the size according to your needs and available resources.
+* beeond_storage_backend: Sets the name of the storage backend for the cinder volumes, choose the appropriate of your cloud site.
+* flavors:
+* compute_node_count
+* image_master
+* image_compute
+* openstack_key_name
+* private_key_path
+* name_prefix
+* security_groups
+* network
 
 
 | Variable               | Default value                 | Unit             | Change               |
-| ---------------------- |:-----------------------------:|:----------------:|:--------------------:|
+| ---------------------- |:-----------------------------:|:----------------:| -------------------- |
 | beeond_disc_size       | 10                            | Gigabytes        | yes (not required)   |
 | beeond_storage_backend | quobyte_hdd                   |     -            | yes (poss. required) |
 | flavors                | de.NBI small disc             | 8 CPUs, 16GB RAM | yes (poss. required) |
-| compute_node_count     | 2                             | Instances        | yes (not required)   |
+| compute_node_count     | 2                             | Instances        | no                   |
 | image_master           | unicore_master_centos         |     -            | no                   |
 | image_compute          | unicore_compute_centos        |     -            | no                   |
 | openstack_key_name     | test                          |     -            | yes (required)       |
