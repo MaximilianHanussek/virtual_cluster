@@ -124,7 +124,7 @@ In order to use the URC follow the steps below:
 is already in the UNICORE user database. Please also check to save the password (which is 321 if yopu should forget it).
 4. Afterwards go to the Workbench and add the new Registry by right-clicking into the window titled with `Grid Browser` and choose `Add Registry`. You can freely choose a name and afterwards replace `localhost` with the IP of your master node. You can find this information in the OpenStack dashboard (Horizon) or in Terraform. The rest of the URL needs to stay the same.
 Here an Example:
-<pre><https://42.42.42.42:8080/REGISTRY/services/Registry?res=default_registry/pre>
+<pre><https://42.42.42.42:8080/REGISTRY/services/Registry?res=default_registry</pre>
 
 Now you can start a small test run by submitting a script to the UNICORE cluster for example via the also configured Workflow System. For this purpose create a new workflow project and add a script (v2.2) to the worklfow, connect it with the green play button and enter for example in the script
 <pre>
