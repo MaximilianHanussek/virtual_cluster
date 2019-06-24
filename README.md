@@ -20,7 +20,7 @@ In order to setup VALET you need to fulfill the following prerequisites
 - Access to remote resources (internet)
 
 ## Installation and Usage
-The following information will help you to setup and use the virtual UNICORE cluster
+The following information will help you to setup and use the virtual UNICORE cluster. This guide is tested for Linux on CentOS7 with Terraform version 0.11.13. 
 
 ### 1. Download/clone the git repository
 In order to use the sources you need to download or clone this git repository to your local machine.
@@ -70,12 +70,87 @@ commands will detect it and remind you to do so if necessary.
 
 ### 3. Configure terraform variables
 In order to start the virtual cluster you will need a few variables we can not set for you.
-Change into the terraform directory if not already done and open the `vars.tf` file. You will find a bunch of defined variables
-but the only ones you need touch are the following:
+Change into the terraform directory if not already done and open the `vars.tf` file. You will find a bunch of defined variables, a comprehensive list can be found in the table below. The ones you will need to touch for sure are marked with `yes (required)`. The ones you can change but do not have to change are marked with `yes (not required)`. The ones marked with `yes (poss. required)` need to be changed if you are running VALET on a non de.NBI cloud site or even not on the de.NBI cloud site Tübingen. As these values and namnes only exists in these cloud environments. Variables you are not allowed to change are marked with `no`. If you change one of the `no` tagged variables it could or will break the configuration process.
 
-* Change the names of the flavors for the master node and compute node entry to fitting ones. Do not underestimate the neccessary resources for the master node. Suggestion would be 8GB RAM and 8-16 CPU cores.
-For the compute nodes you can choose what you find appropriate for your purposes.
- 
+#### Variable explanantion
+* beeond_disc_size: Sets the cinder volume size of the volumes attached to the master node and the two compute nodes. The shared file system will have the set size in gigabytes times three, for every participating node. So for 10GB it will 30GB. Set the size according to your needs and available resources.
+* beeond_storage_backend: Sets the name of the storage backend for the cinder volumes, choose the appropriate of your cloud site.
+* flavors: Sets the used compute resources (CPUs, RAM, ...) Recommended for the master node are 8 CPUs and at least 16GB RAM.
+* compute_node_count: Sets the number of compute nodes (current configuration works only with two). 
+* image_master: Sets the image to be used for the master node. Will be downloaded automatically. 
+* image_compute: Sets the image to be used for the master node. Will be downloaded automatically.
+* openstack_key_name: Sets the SSH key name of your OpenStack environment (Keypair is required to be set up already). 
+* private_key_path: Sets the path to your private key in order to access the VMs and run configuration scripts.
+* name_prefix: Sets a prefix for the names of the starting VMs
+* security_groups: Sets the names and the security groups itself (do not need be to exist)
+* network: Sets the network to be used
+
+| Variable               | Default value                 | Unit             | Change               |
+| ---------------------- |:-----------------------------:|:----------------:| -------------------- |
+| beeond_disc_size       | 10                            | Gigabytes        | yes (not required)   |
+| beeond_storage_backend | quobyte_hdd                   |     -            | yes (poss. required) |
+| flavors                | de.NBI small disc             | 8 CPUs, 16GB RAM | yes (poss. required) |
+| compute_node_count     | 2                             | Instances        | no                   |
+| image_master           | unicore_master_centos         |     -            | no                   |
+| image_compute          | unicore_compute_centos        |     -            | no                   |
+| openstack_key_name     | test                          |     -            | yes (required)       |
+| private_key_path       | /path/to/private/key          |     -            | yes (required)       |
+| name_prefix            | unicore-                      |     -            | no                   |
+| security_groups        | virtual-unicore-cluster-public|     -            | no                   |
+| network                | denbi_uni_tuebingen_external  |     -            | yes (poss. required) |
+
+### 4. Start Terraform setup
+After the Terraform variables are setup correctly we can go on to start the configuration process.
+In order to do this, change into the `terraform` directory of the Git repository and first run a dry run with
+<pre>terraform plan</pre>
+
+Terraform will now inform you what it will do and checks if the syntax of the terraform files (.tf)a re all correct.
+If an error occur please follow the notes from Terraform and asure that you have sourced your openrc credentials file and initialized the Terraform plugins with `terraform init`.
+
+If everything looks reasonable we can start with the real action executing
+<pre>terraform apply</pre>
+
+This command will first set up the required volumes, then the security group. Afterwards the required images will be downloaded and imported into the OpenStack environment, which can take some time dependent on the network connection (compute image: 1.93GB, master image: 4.40GB). The next step will fire up the VMs and also attaches the cinder volumes. A subsequent script will mount the volumes, create one time SSH keys and distribute them on the different VMs so they can talk with each other without using your general private key for obvious security reasons. In the end the shared file system based on BeeOND will be started, the TORQUE cluster is started and in the end the UNICORE components. All this will take around 5-10 mins.
+In the end you will have a fully setup UNICORE cluster that you can access like explained in Chapter 5.
+But of course you can use just the usual TORQUE batch system without UNICORE and submitting jobs to a queue. 
+
+### 5. Access your UNICORE cluster
+There are different ways to access the UNICORE cluster. One possibility is to use UNICORE Commandline Client (UCC) which can be downloaded [here](https://sourceforge.net/projects/unicore/files/Clients/Commandline%20Client/7.13.0/). The second possibility is to use the UNICORE Rich Client (URC), you can donwload [here](https://sourceforge.net/projects/unicore/files/Clients/GUI%20Client/7.4.1/). In this instructions we will focus on the second possibility as this is the more convenient one.
+
+In order to use the URC follow the steps below:
+1. Download the URC to your local computer (the same you have started)
+2. Unpack it and start the Application
+3. It will ask your for the credentials, we will use the demo credentials as this is also the user who 
+is already in the UNICORE user database. Please also check to save the password (which is 321 if yopu should forget it).
+4. Afterwards go to the Workbench and add the new Registry by right-clicking into the window titled with `Grid Browser` and choose `Add Registry`. You can freely choose a name and afterwards replace `localhost` with the IP of your master node. You can find this information in the OpenStack dashboard (Horizon) or in Terraform. The rest of the URL needs to stay the same.
+Here an Example:
+<pre>https://42.42.42.42:8080/REGISTRY/services/Registry?res=default_registry</pre>
+
+Now you can start a small test run by submitting a script to the UNICORE cluster for example via the also configured Workflow System. For this purpose create a new workflow project and add a script (v2.2) to the worklfow, connect it with the green play button and enter for example in the script
+<pre>
+whoami
+uname -r
+date</pre>
+
+Click on the play button chose the available worjkflow engine and click on finish. You will see the worklfow running in the Grid Browser window if you unfold the name of Registry you have chosen, the `Workflow engine` and the `Workflows` icon. The output is accessible in the folder `working directory of ...`.
+
+For further complex workflows and further explanations on UNICORE we refer to the official documentation which you can find [here](https://www.unicore.eu/documentation/).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
