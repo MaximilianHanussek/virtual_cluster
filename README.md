@@ -78,20 +78,21 @@ For the compute nodes you can choose what you find appropriate for your purposes
 
 
 
-| Variable               | Default value | Unit | Meaning | Changeable |
-| ---------------------- |:-------------:|:----:|:-------:| :---------:|
-| beeond_disc_size       |        | |
-| beeond_storage_backend |       | |
-| flavors                |       | |
-| compute_node_count     |    
-| image_master           |
-| image_compute          |
-| openstack_key_name     |
-| public_key             |
-| private_key_path       |
-| name_prefix            |
-| security_groups        |
-| network                |
+| Variable               | Default value                 | Unit             | Change               |
+| ---------------------- |:-----------------------------:|:----------------:|:--------------------:|
+| beeond_disc_size       | 10                            | Gigabytes        | yes (not required)   |
+| beeond_storage_backend | quobyte_hdd                   |     -            | yes (poss. required) |
+| flavors                | de.NBI small disc             | 8 CPUs, 16GB RAM | yes (poss. required) |
+| compute_node_count     | 2                             | Instances        | yes (not required)   |
+| image_master           | unicore_master_centos         |     -            | no                   |
+| image_compute          | unicore_compute_centos        |     -            | no                   |
+| openstack_key_name     | test                          |     -            | yes (required)       |
+| private_key_path       | /path/to/private/key          |     -            | yes (required)       |
+| name_prefix            | unicore-                      |     -            | no                   |
+| security_groups        | virtual-unicore-cluster-public|     -            | no                   |
+| network                | denbi_uni_tuebingen_external  |     -            | yes (poss. required) |
+
+
 
 
 
