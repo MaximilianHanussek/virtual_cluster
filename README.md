@@ -19,6 +19,18 @@ In order to setup VALET you need to fulfill the following prerequisites
 - Installed version of [Terraform](https://www.terraform.io/) (tested with v0.11.13)
 - Access to remote resources (internet)
 
+## Latest Images
+This section will list the most up to date and tested images for the master and compute nodes. If you want to use older images for some reasons you will need to change the names in the Terraform`vars.tf` file. 
+
+#### Current
+- master image  : unicore_master_centos_20190702.qcow2
+- compute image : unicore_compute_centos_20190701.qcow2
+
+#### Old
+- master image  : -
+- compute image : -
+
+
 ## Installation and Usage
 The following information will help you to setup and use the virtual UNICORE cluster. This guide is tested for Linux on CentOS7 with Terraform version 0.11.13. 
 
