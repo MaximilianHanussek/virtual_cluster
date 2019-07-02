@@ -22,7 +22,8 @@ variable "image_master" {
   type = "map"
   default = {
     "name" = "unicore_master_centos"
-    "image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_master_centos.qcow2"
+    #"image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_master_centos.qcow2"
+    "image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_master_centos_20190702.qcow2"
     "container_format" = "bare"
     "disk_format" = "qcow2"
    }
@@ -32,7 +33,8 @@ variable "image_compute" {
   type = "map"
   default = {
     "name" = "unicore_compute_centos"
-    "image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_compute_centos.qcow2"
+    #"image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_compute_centos.qcow2"
+    "image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_compute_centos_20190701.qcow2"
     "container_format" = "bare"
     "disk_format" = "qcow2"
    }

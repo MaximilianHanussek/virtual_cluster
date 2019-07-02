@@ -1,0 +1,12 @@
+---
+# defaults file for virtual unicore cluster master image
+## List of packages to install TORQUE scheduler and UNICORE components
+common_packages:
+  - curl
+  - wget
+  - htop
+  - java
+  - libxml2-devel
+  - boost-devel
+  - openssl-devel
+  - python-pip

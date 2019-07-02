@@ -87,7 +87,7 @@ block_device {
   
   provisioner "file" {
     source = "../configure_unicore"
-    destination = "/usr/local/bin/configure_unicore"
+    destination = "/home/centos/configure_unicore"
 
     connection {
       type        = "ssh"
@@ -99,7 +99,7 @@ block_device {
 
   provisioner "file" {
     source = "../start_initial_unicore_cluster"
-    destination = "/usr/local/bin/start_initial_unicore_cluster"
+    destination = "/home/centos/start_initial_unicore_cluster"
 
     connection {
       type        = "ssh"
@@ -111,6 +111,25 @@ block_device {
 
   provisioner "remote-exec" {
     inline = [
+      "sudo mv /home/centos/configure_unicore /usr/local/bin/configure_unicore",
+      "sudo mv /home/centos/start_initial_unicore_cluster /usr/local/bin/start_initial_unicore_cluster",
+      "sudo chmod 777 /usr/local/bin/configure_unicore",
+      "sudo chmod 777 /usr/local/bin/start_initial_unicore_cluster"
+    ]
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo rm -rf /home/centos/tpackages/",
       "start_initial_unicore_cluster"
     ]
 
@@ -183,9 +202,3 @@ block_device {
     }
   }
 }
-
-
-
-
-
-

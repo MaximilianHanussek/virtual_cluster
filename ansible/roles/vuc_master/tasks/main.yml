@@ -1,0 +1,290 @@
+---
+# tasks file for virtual unicore cluster master image
+
+- name: Disable beegfs repo
+  lineinfile:
+    path: /etc/yum.repos.d/beegfs-rhel7.repo
+    regexp: '^enabled='
+    line: enabled=0
+  become: yes
+
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+  become: yes
+
+- name: Reboot immediately
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  become: yes
+
+- name: Wait for the reboot to complete
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timeout: 300
+
+#- name: Install EPEL
+#  yum:
+#    name: epel-release
+#    state: latest
+#    disable_gpg_check: 1
+#  become: yes
+
+#- name: install the 'Development tools' package group
+#  yum:
+#    name: "@Development tools"
+#    state: present
+#    disable_gpg_check: 1
+#  become: yes
+
+
+- name: Install packages
+  #with_items: "{{ common_packages | mandatory }}"
+  yum:
+    name: "{{ common_packages | mandatory }}"
+    state: latest
+    disable_gpg_check: 1
+  become: yes
+
+- name: Disable SELinux
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: SELINUX=disabled
+  become: yes
+
+- name: Change permissions of /etc/hosts file
+  command: chown centos:centos /etc/hosts
+  become: yes
+
+- name: Install pexpect via pip
+  pip:
+    name: pexpect
+  become: yes
+ 
+- name: Download and unarchive python version 2.7.6
+  unarchive:
+    src: https://www.python.org/ftp/python/2.7.6/Python-2.7.6.tar.xz
+    dest: "/opt/"
+    remote_src: yes
+  become: yes
+
+- name: Configure Python version 2.7.6
+  command: ./configure --prefix=/usr/local
+  args:
+    chdir: "/opt/Python-2.7.6/"
+  become: yes
+
+- name: Compile Python 2.7.6
+  make:
+    chdir: "/opt/Python-2.7.6/"
+    target: all
+  become: yes
+
+- name: Install Python 2.7.6
+  make:
+    chdir: "/opt/Python-2.7.6/"
+    target: altinstall
+  become: yes
+
+- name: Download TORQUE in version 6.1.1.1
+  unarchive:
+    src: https://s3.denbi.uni-tuebingen.de/max/torque-6.1.1.1.tar.gz
+    dest: "/opt/"
+    remote_src: yes
+    owner: "centos"
+    group: "centos" 
+  become: yes
+
+- name: Configure TORQUE
+  command: ./configure
+  args:
+    chdir: "/opt/torque-6.1.1.1/"
+  become: yes
+
+- name: Compile TORQUE
+  make:
+    chdir: "/opt/torque-6.1.1.1/"
+    target: all
+  become: yes
+
+- name: Install TORQUE
+  make:
+   chdir: "/opt/torque-6.1.1.1/"
+   target: install
+  become: yes
+
+- name: Create TORQUE packages
+  make:
+   chdir: "/opt/torque-6.1.1.1/"
+   target: packages
+  become: yes
+
+- name: Start TORQUE setup
+  expect:
+    command: /bin/bash -c "sudo /opt/torque-6.1.1.1/torque.setup root"
+    responses:
+     do you wish to continue y/(n)?: "y"
+
+# Necessary du to a problem that trqauthd will not start for unknown reasons via Ansible
+- name: Kill pbs_server process
+  shell: sudo kill -15 $(ps aux | grep -m 1 pbs_server | awk {'print $2'})
+
+#- name: Get Hostname of remote host
+#  shell: echo $HOSTNAME
+#  register: HOSTNAME
+
+#- name: Stop started pbs_server process
+#  command: /usr/local/bin/qterm "{{ HOSTNAME.stdout }}"
+#  become: yes
+
+#- name: Stop started trqauthd process
+#  command: /usr/local/sbin/trqauthd -d
+#  become: yes
+
+- name: Set TORQUE server name to unicore-master
+  lineinfile:
+    path: /var/spool/torque/server_name
+    regexp: '^.*'
+    line: unicore-master
+  become: yes
+
+- name: Create empty nodes file
+  file: path=/var/spool/torque/server_priv/nodes state=touch
+  become: yes
+
+- name: Create user unicore
+  command: adduser unicore
+  become: yes
+
+- name: Download and unarchive UNICORE-server component
+  unarchive:
+    src: https://s3.denbi.uni-tuebingen.de/max/unicore-servers-7.9.0.tgz
+    dest: "/usr/local/"
+    remote_src: yes
+  become: yes
+
+- name: Download UNICORE-workflow component
+  unarchive:
+    src: https://s3.denbi.uni-tuebingen.de/max/unicore-workflow-7.9.1.tgz
+    dest: "/usr/local/"
+    remote_src: yes
+  become: yes
+
+#- name: Unarchive UNICORE-workflow component
+#  command: tar -xf /usr/local/unicore-workflow-7.9.1.tgz
+#  become: yes
+
+#- name: Delete UNICORE-workflow component archive
+#  command: rm /usr/local/unicore-workflow-7.9.1.tgz
+
+- name: Change permissions of unicore-servers-7.9.0 directory
+  command: chmod 777 /usr/local/unicore-servers-7.9.0
+  become: yes
+
+- name: Change permissions of unicore-workflow-7.9.1 directory
+  command: chmod 777 /usr/local/unicore-workflow-7.9.1
+  become: yes
+
+
+### UNICORE server component ownership changes ###
+- name: Change owner of adduser.sh from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/adduser.sh
+  become: yes
+
+- name: Change owner of certs dir recursively from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/certs/
+  become: yes
+
+- name: Change owner of CHANGES.txt from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/CHANGES.txt
+  become: yes
+
+- name: Change owner of configure.properties from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/configure.properties
+  become: yes
+
+- name: Change owner of configure.py from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/configure.py
+  become: yes
+
+- name: Change owner of docs dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/docs/
+  become: yes
+
+- name: Change owner of extras dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/extras/
+  become: yes
+
+- name: Change owner of gateway dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/gateway/
+  become: yes
+
+- name: Change owner of install.py from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/install.py
+  become: yes
+
+- name: Change owner of LICENCE from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/LICENCE
+  become: yes
+
+- name: Change owner of README.txt from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/README.txt
+  become: yes
+
+- name: Change owner of README-UPGRADE.txt from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/README-UPGRADE.txt
+  become: yes
+
+- name: Change owner of registry dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/registry/
+  become: yes
+
+- name: Change owner of servicewrapper dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/servicewrapper/
+  become: yes
+
+- name: Change owner of start.sh from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/start.sh
+  become: yes
+
+- name: Change owner of stop.sh from root to unicore
+  command: chown unicore:root /usr/local/unicore-servers-7.9.0/stop.sh
+  become: yes
+
+- name: Change owner of unicorex dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/unicorex/
+  become: yes
+
+- name: Change owner of xuudb dir from root to unicore
+  command: chown -R unicore:root /usr/local/unicore-servers-7.9.0/xuudb/
+  become: yes
+
+
+### UNICORE workflow engine ownership changes ###
+- name: Change owner and group of all directories in unicore-workflow dir
+  shell: chown -R unicore:unicore /usr/local/unicore-workflow-7.9.1/*
+  become: yes
+
+- name: Change permissions of all files and directores in unicore-workflow dir
+  shell: chmod -R 777 /usr/local/unicore-workflow-7.9.1/*
+  become: yes
+
+### Tidy up footprints ###
+- name: Clear centos history
+  command: echo "" > /home/centos/.bash_history
+
+- name: Clear unicore history
+  command: su - unicore -c "echo '' > /home/unicore/.bash_history"
+  become: yes
+
+- name: Clear root history
+  command: su - root -c "echo '' > /root/.bash_history"
+  become: yes
+
+- name: Clear authorized_keys file
+  shell: echo "" > /home/centos/.ssh/authorized_keys

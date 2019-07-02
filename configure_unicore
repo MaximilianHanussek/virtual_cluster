@@ -3,8 +3,8 @@
 #title           :configure_unicore
 #description     :This script will configure and start the UNICORE components
 #author          :Maximilian Hanussek
-#date            :2019-06-19
-#version         :1.2
+#date            :2019-07-02
+#version         :1.3
 #usage           :sh configure_unicore MASTER_NODE_IP TOTAL_CPUS_MAX NODE_CPUS_MAX NODE_MEM_MAX NODES_MAX
 #notes           :Needs five parameter: IP of the master node, Sum of total CPUs, Maximum of CPUs per node, Maximum of RAM per node (in Bytes), Maximum number of nodes
 #bash_version    :4.2.46(1)-release
@@ -38,6 +38,16 @@ sudo sed -i "/^uxNodesMax/c\uxNodesMax=$NODES_MAX" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^tsiHost=/c\tsiHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^xuudbHost=/c\xuudbHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^registryHost=/c\registryHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^INSTALL_PATH=/c\INSTALL_PATH=/usr/local/unicore-servers-7.9.0" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^registry=/c\registry=true" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^gwAutoRegistration=/c\gwAutoRegistration=true" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxMemory=/c\uxMemory=1024" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxEnableStorageFactory=/c\uxEnableStorageFactory=true" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxDefaultStorageFactoryPath=/c\uxDefaultStorageFactoryPath=/beeond/" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxTSIStatusUpdateInterval=/c\uxTSIStatusUpdateInterval=5000" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxTSIWorkingDirectoriesBasedir=/c\uxTSIWorkingDirectoriesBasedir=/beeond" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^tsiSelected=/c\tsiSelected=torque" $PROPERTIES_FILE_SERVER
+
 
 ### UNICORE WORKFLOW CONFIGURATION ###
 #Set the correct configvalues in the corresponding configuration file#
@@ -46,6 +56,10 @@ sudo sed -i "/^wfHost=/c\wfHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
 sudo sed -i "/^soHost=/c\soHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
 sudo sed -i "/^urlExternalRegistry=/c\urlExternalRegistry=$REGISTRY_URL" $PROPERTIES_FILE_WORKFLOW
 sudo sed -i "/^xuudbHost=/c\xuudbHost=$MASTER_NODE_IP" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^wfPort=/c\wfPort=8098" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^wfMemory=/c\wfMemory=1024" $PROPERTIES_FILE_WORKFLOW
+sudo sed -i "/^soMemory=/c\soMemory=1024" $PROPERTIES_FILE_WORKFLOW
+
 
 cd /usr/local/unicore-servers-7.9.0/            #Change into unicore-servers directory
 sudo ./configure.py unicore $MASTER_NODE_IP     #Run configure.py script
@@ -69,4 +83,8 @@ sudo -u root sh -c "/usr/local/unicore-servers-7.9.0/tsi_selected/bin/start.sh" 
 cd /usr/local/unicore-workflow-7.9.1/           #Change into unicore-workflow directory
 sudo ./configure.py unicore                     #Run configure.py script
 sudo ./install.py                               #Run install.py script (might answer that nothing is to do)
+
+
+sudo -u unicore sh -c "sh /usr/local/unicore-servers-7.9.0/xuudb/bin/admin.sh adddn REGISTRY 'CN=Demo Servorch, O=UNICORE, C=EU' nobody server" #Add Servorch user to xuudb
+sudo -u unicore sh -c "sh /usr/local/unicore-servers-7.9.0/xuudb/bin/admin.sh adddn REGISTRY 'CN=Demo Workflow, O=UNICORE, C=EU' nobody server" #Add Worklfow user to xuudb
 sudo -u unicore sh -c "/usr/local/unicore-workflow-7.9.1/start-workflow.sh" #Start all UNICORE workflow components (as user unicore)

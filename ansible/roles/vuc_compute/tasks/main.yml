@@ -1,0 +1,94 @@
+---
+# tasks file for virtual unicore cluster compute image
+
+- name: Disable beegfs repo
+  lineinfile:
+    path: /etc/yum.repos.d/beegfs-rhel7.repo
+    regexp: '^enabled='
+    line: enabled=0
+  become: yes
+
+- name: Upgrade all packages
+  yum:
+    name: '*'
+    state: latest
+  become: yes
+
+- name: Reboot immediately
+  shell: "sleep 5 && reboot"
+  async: 1
+  poll: 0
+  become: yes
+
+- name: Wait for the reboot to complete
+  wait_for_connection:
+    connect_timeout: 20
+    sleep: 5
+    delay: 5
+    timeout: 300
+
+- name: Install packages
+  yum:
+    name: "{{ common_packages | mandatory }}"
+    state: latest
+    disable_gpg_check: 1
+  become: yes
+
+- name: Disable SELinux
+  lineinfile:
+    path: /etc/selinux/config
+    regexp: '^SELINUX='
+    line: SELINUX=disabled
+  become: yes
+
+- name: Change owner of /etc/hosts file
+  command: chown centos:centos /etc/hosts
+  become: yes
+
+- name: Remove beeond_nodefile from home directory (unneccessary)
+  command: rm -f /home/centos/beeond_nodefile
+
+- name: Copy torque-package-mom-linux-x86_64.sh to remote host
+  copy:
+    src: torque-package-mom-linux-x86_64.sh
+    dest: /home/centos/torque-package-mom-linux-x86_64.sh
+
+#- name: Trigger torque mom installation
+#  shell: sudo su - root -c "sh /home/centos/torque-package-mom-linux-x86_64.sh --install"
+
+- name: Trigger torque mom installation
+  command: sh /home/centos/torque-package-mom-linux-x86_64.sh --install
+  become: yes
+
+- name: Set TORQUE server name to unicore-master
+  lineinfile:
+    path: /var/spool/torque/server_name
+    regexp: '^.*'
+    line: unicore-master
+  become: yes
+
+- name: Create empty torque mom config file
+  file: path=/var/spool/torque/mom_priv/config state=touch
+  become: yes  
+
+- name: Add pbs_server name to config
+  lineinfile:
+    path: /var/spool/torque/mom_priv/config
+    line: $pbsserver unicore-master
+  become: yes
+
+- name: Add shared storage path to config
+  lineinfile:
+    path: /var/spool/torque/mom_priv/config
+    line: $usecp *:/beeond  /beeond
+  become: yes
+
+- name: Clear root history
+  command: su - root -c "echo '' > /root/.bash_history"
+  become: yes
+
+- name: Clear centos history
+  command: echo "" > /home/centos/.bash_history
+
+- name: Clear authorized_keys file
+  shell: echo "" > /home/centos/.ssh/authorized_keys

@@ -1,0 +1,7 @@
+---
+# defaults file for virtual unicore cluster master image
+## List of packages to install 
+common_packages:
+  - curl
+  - wget
+  - htop
