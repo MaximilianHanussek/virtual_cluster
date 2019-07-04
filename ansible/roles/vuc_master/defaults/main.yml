@@ -5,6 +5,7 @@ common_packages:
   - curl
   - wget
   - htop
+  - bc
   - java
   - libxml2-devel
   - boost-devel
