@@ -90,14 +90,14 @@ if [[ $queued_jobs == 0 || $running_jobs == 0 ]]; then                          
 	if [[ $running_jobs == 0 || $(echo "$running_CPU_capacity_ratio < $rCcr" | bc -l) ]]; then  #Check if running jobs are 0 or ratio from above is lower than threshold
 		if [ -f /home/centos/.virtual_cluster_stats_start ]; then                               #If this is the case check if .virtual_cluster_stats_start file exists
         		echo "W5 $W5" >> /home/centos/.virtual_cluster_stats_start                      #Add weight to .virtual_cluster_stats_start file
-        else                                                                                    #If .virtual_cluster_stats_start file does not exist
-            if [ -f /home/centos/.virtual_cluster_stats_stop ]; then                            #Check if .virtual_cluster_stats_stop file exists
-                echo "W5 $W5" >> /home/centos/.virtual_cluster_stats_stop                       #Add weight to .virtual_cluster_stats_stop file
-		    else                                                                                #If .virtual_cluster_stats_stop file does not exist
+        	else                                                                                    #If .virtual_cluster_stats_start file does not exist
+            		if [ -f /home/centos/.virtual_cluster_stats_stop ]; then                            #Check if .virtual_cluster_stats_stop file exists
+                		echo "W5 $W5" >> /home/centos/.virtual_cluster_stats_stop                       #Add weight to .virtual_cluster_stats_stop file
+	    		else                                                                                #If .virtual_cluster_stats_stop file does not exist
 				echo "W5 $W5" > /home/centos/.virtual_cluster_stats_stop                        #Create new .virtual_cluster_stats_stop file and add weight to it
-		    fi
-        fi
-    fi
+            		fi
+        	fi
+    	fi
 else                                                                    
 	queued_running_ratio=$(echo $queued_jobs / $running_jobs | bc -l)               #If queued or running jobs are not 0, calculate the ratio of #queued and #running jobs 
 
