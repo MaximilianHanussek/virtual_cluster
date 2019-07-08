@@ -15,9 +15,17 @@ variable "image_compute" {
   default = "unicore_compute_centos_20190701_orig"
 }
 
+variable "next_node_number" {
+  default = "../next_node_number"
+}
+
 
 variable "openstack_key_name" {
   default = "maximilian-demo"
+}
+
+variable "initial_cluster_connection_key_private" {
+  default = "../terraform/connection_key.pem"
 }
 
 variable "private_key_path" {

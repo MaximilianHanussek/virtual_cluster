@@ -4,17 +4,18 @@ data "openstack_images_image_v2" "image_compute" {
 }
 
 resource "openstack_blockstorage_volume_v2" "beeond_volume_compute" {
-  name          = "${var.name_prefix}beeond_volume_compute-2"
+  name          = "${var.name_prefix}beeond_volume_compute-${file(var.next_node_number)}"
   size          = "${var.beeond_disk_size}"
   volume_type   = "${var.beeond_storage_backend}"
 }
 
 
 resource "openstack_compute_instance_v2" "compute" {
-  name            = "${var.name_prefix}compute-node-2"
+  name            = "${var.name_prefix}compute-node-${file(var.next_node_number)}"
   flavor_name     = "${var.flavors}"
   image_id        = "${data.openstack_images_image_v2.image_compute.id}"
   key_pair        = "${var.openstack_key_name}"
+#  key_pair        = "${file(var.initial_cluster_connection_key_public)}"
   security_groups = "${var.security_groups}"
   network         = "${var.network}"
 
@@ -46,7 +47,8 @@ block_device {
   }
 
   provisioner "file" {
-    content     = "${tls_private_key.internal_connection_key.private_key_pem}"
+#    content     = "${tls_private_key.internal_connection_key.private_key_pem}"
+    content     = "${file(var.initial_cluster_connection_key_private)}"
     destination = "~/.ssh/connection_key.pem"
     
     connection {

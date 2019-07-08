@@ -19,9 +19,13 @@ add_to_host_file $IP_ADDED_HOST $NAME_ADDED_HOST $SSH_KEY_PATH          #Execute
 MGMT_IP=$(head -n 1 /home/centos/beeond_nodefile)                       #Get IP of the management node of the beegfs filesystem
 echo $MGMT_IP > /home/centos/beeond_nodefile2                           #Write management IP to file
 echo $IP_ADDED_HOST >> /home/centos/beeond_nodefile2                    #Add new node IP to same file
+echo $IP_ADDED_HOST >> /home/centos/beeond_nodefile			#Add new node IP to general beeond_nodefile
+
 
 echo "Adding node to beegfs filesystem"
 /opt/beegfs/sbin/beeond-add-storage-node start -n /home/centos/beeond_nodefile2 -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos #Start beeond script and add node to existing beegfs filesystem
+
+rm /home/centos/beeond_nodefile2 					#Delete beeond_nodefile2 as not needed anymore
 
 echo "Adding node to torque cluster"
 add_node_to_torque $NAME_ADDED_HOST $SSH_KEY_PATH                       #Execute add_node_to_torque script (/usr/local/bin) to make torque aware of the new node

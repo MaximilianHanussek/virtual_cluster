@@ -14,3 +14,5 @@ SSH_KEY_PATH=$2                                                     #Get file pa
 
 sudo env "PATH=$PATH" qmgr -c "create node $HOSTNAME_ADDED_NODE"    #Add node to the cluster
 sudo env "PATH=$PATH" qmgr -c "set server auto_node_np = True"      #Set the correct amount of CPUs automatically
+ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$HOSTNAME_ADDED_NODE sudo systemctl enable pbs_mom
+ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$HOSTNAME_ADDED_NODE sudo systemctl start pbs_mom
