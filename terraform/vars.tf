@@ -1,5 +1,5 @@
 variable "beeond_disk_size" {
-  default = 10
+  default = 30
 }
 
 variable "beeond_storage_backend" {

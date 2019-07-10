@@ -109,12 +109,126 @@ block_device {
     }
   }
 
+  provisioner "file" {
+    source = "../add_node_to_cluster"
+    destination = "/home/centos/add_node_to_cluster"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../add_node_to_torque"
+    destination = "/home/centos/add_node_to_torque"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../add_to_host_file"
+    destination = "/home/centos/add_to_host_file"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+  
+  provisioner "file" {
+    source = "../beeond-add-storage-node"
+    destination = "/home/centos/beeond-add-storage-node"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../remove_node_from_cluster"
+    destination = "/home/centos/remove_node_from_cluster"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../delete_node_from_torque"
+    destination = "/home/centos/delete_node_from_torque"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../delete_from_host_file"
+    destination = "/home/centos/delete_from_host_file"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../beeond-remove-storage-node"
+    destination = "/home/centos/beeond-remove-storage-node"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+
+
   provisioner "remote-exec" {
     inline = [
       "sudo mv /home/centos/configure_unicore /usr/local/bin/configure_unicore",
       "sudo mv /home/centos/start_initial_unicore_cluster /usr/local/bin/start_initial_unicore_cluster",
+      "sudo mv /home/centos/add_node_to_cluster /usr/local/bin/add_node_to_cluster",
+      "sudo mv /home/centos/add_node_to_torque /usr/local/bin/add_node_to_torque",
+      "sudo mv /home/centos/add_to_host_file /usr/local/bin/add_to_host_file",
+      "sudo mv /home/centos/beeond-add-storage-node /opt/beegfs/sbin/beeond-add-storage-node",
+      "sudo mv /home/centos/remove_node_from_cluster /usr/local/bin/remove_node_from_cluster",
+      "sudo mv /home/centos/delete_node_from_torque /usr/local/bin/delete_node_from_torque",
+      "sudo mv /home/centos/delete_from_host_file /usr/local/bin/delete_from_host_file",
+      "sudo mv /home/centos/beeond-remove-storage-node /opt/beegfs/sbin/beeond-remove-storage-node",
       "sudo chmod 777 /usr/local/bin/configure_unicore",
-      "sudo chmod 777 /usr/local/bin/start_initial_unicore_cluster"
+      "sudo chmod 777 /usr/local/bin/start_initial_unicore_cluster",
+      "sudo chmod 777 /usr/local/bin/add_node_to_cluster",
+      "sudo chmod 777 /usr/local/bin/add_node_to_torque",
+      "sudo chmod 777 /usr/local/bin/add_to_host_file",
+      "sudo chmod 777 /opt/beegfs/sbin/beeond-add-storage-node",
+      "sudo chmod 777 /usr/local/bin/remove_node_from_cluster",
+      "sudo chmod 777 /usr/local/bin/delete_node_from_torque",
+      "sudo chmod 777 /usr/local/bin/delete_from_host_file",      
+      "sudo chmod 777 /opt/beegfs/sbin/beeond-remove-storage-node"
     ]
 
     connection {

@@ -15,7 +15,7 @@ MGMTD_HOST=$2
 SSH_KEY_PATH=$3
 
 # Get the beegfs specific node id and the target id
-BEEGFS_NODE_ID=$(beegfs-ctl --listnodes --nodetype=storage --sysMgmtdHost=$MGMTD_HOST | grep $NODE_NAME | awk '{print substr($3, 1, length($3)-1)}')	#Parse out beegfs node ID to be removed 
+BEEGFS_NODE_ID=$(beegfs-ctl --mount=/beeond --listnodes --nodetype=storage | grep $NODE_NAME | awk '{print substr($3, 1, length($3)-1)}')	#Parse out beegfs node ID to be removed 
 BEEGFS_TARGET_ID=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$NODE_NAME cat /mnt/beegfs-storage/targetNumID)	   #Parse out beegfs storage target ID to be removed
 
 # Place the free_space.override file in /mnt/beegfs-storage/ with value zero to prevent new data on this target
@@ -43,7 +43,7 @@ AFTER_REMOVAL_AVAILABLE_BEEOND_SPACE=$(expr $BEFORE_REMOVAL_AVAILABLE_BEEOND_SPA
 if [[ $AFTER_REMOVAL_AVAILABLE_BEEOND_SPACE -gt $MIGRATING_DISK_SPACE ]]; 				#Check that migration space is lower than available space
 then
         echo "Migration is started"
-	beegfs-ctl --migrate --nodeid=$BEEGFS_NODE_ID --sysMgmtdHost=$MGMTD_HOST /beeond/		#Start migration of the data
+	beegfs-ctl --migrate --mount=/beeond --nodeid=$BEEGFS_NODE_ID /beeond/		#Start migration of the data
 	echo "Migration is finished"
 else
 	echo "Migration not possible, not enough space on target volume, please free some space."	#Do not start migration if not enough space is available
@@ -51,7 +51,7 @@ else
 fi
 
 # Remove node from the beeond shared filesystem
-sudo beegfs-ctl --removenode --nodetype=storage --sysMgmtdHost=$MGMTD_HOST $BEEGFS_NODE_ID		#Remove node from shared filesystem (root access required)
+sudo beegfs-ctl --removenode --nodetype=storage --mount=/beeond $BEEGFS_NODE_ID		#Remove node from shared filesystem (root access required)
 
 # Stop beeond processes on the removed node and delete remaining data
 echo $NODE_NAME > /home/centos/beeond_remove_nodefile							#Create temporary nodefile for the node to remove

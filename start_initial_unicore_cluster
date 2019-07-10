@@ -43,8 +43,17 @@ rm -f /home/centos/host_ip_list                                                 
 
 
 ### Start BeeOND filesystem ###
+
+
+sudo sed -i "/^tuneMetaSpaceLowLimit/c\tuneMetaSpaceLowLimit = 3G" /etc/beegfs/beegfs-mgmtd.conf
+sudo sed -i "/^tuneMetaSpaceEmergencyLimit/c\tuneMetaSpaceEmergencyLimit = 1G" /etc/beegfs/beegfs-mgmtd.conf
+sudo sed -i "/^tuneStorageSpaceLowLimit/c\tuneStorageSpaceLowLimit = 3G" /etc/beegfs/beegfs-mgmtd.conf
+sudo sed -i "/^tuneStorageSpaceEmergencyLimit/c\tuneStorageSpaceEmergencyLimit = 500M" /etc/beegfs/beegfs-mgmtd.conf
+
 echo "Starting BeeOND"
-beeond start -f /opt/beegfs/sbin -n /home/centos/beeond_nodefile -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos    #Starting BeeOND file system with additional config file in /opt/beegfs/sbin to set the storage pool thresholds correctly
+#beeond start -f /opt/beegfs/sbin -n /home/centos/beeond_nodefile -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos    #Starting BeeOND file system with additional config file in /opt/beegfs/sbin to set the storage pool thresholds correctly
+beeond start -f /etc/beegfs/ -n /home/centos/beeond_nodefile -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos    #Starting BeeOND file system with additional config file in /opt/beegfs/sbin to set the storage pool thresholds correctly
+
 
 
 ### Add nodes to torque cluster ###
