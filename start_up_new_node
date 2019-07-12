@@ -1,3 +1,23 @@
 #!/bin/bash
 
+sh ./get_next_compute_node_number.sh 	#Start script to parse out next node number
+cd terraform_add_node/			#Change to add node directory
+source /home/mhanussek/demo-openrc.sh	#Set path to rc file to source OpenStack API credentials
+
+terraform init				#Init terrafrom
+terraform apply				#Apply node start
+cd ..
+
+search_line_number=$(grep -n "unicore-master" terraform/terraform.tfstate | cut -f1 -d:)
+IP_MASTER_NODE=$(tail -n +$search_line_number terraform/terraform.tfstate | grep "network.0.fixed_ip_v4" | awk -F ': "' '{print $2}' | head -c -3)
+NEW_NODE_IP=$(grep -n "network.0.fixed_ip_v4" terraform_add_node/terraform.tfstate | awk -F ': "' '{print $2}' | head -c -3)
+NEW_NODE_HOSTNAME=$(grep -n "unicore-compute-node-" terraform_add_node/terraform.tfstate | awk -F ': "' '{print $2}' | head -c -3)
+SSH_PATH_LOCAL="/home/centos/.ssh/connection_key.pem"
+SSH_PATH_MASTER=$(awk '/private_key_path/{getline; print}' terraform/vars.tf | awk -F ' = "' '{print $2}' | head -c -2)
+
+ssh -n -o StrictHostKeyChecking=no -i $SSH_PATH_MASTER centos@$IP_MASTER_NODE "add_node_to_cluster $NEW_NODE_IP $NEW_NODE_HOSTNAME $SSH_PATH_LOCAL"
+
+rm terraform_add_node/terraform.tfstate
+
+
 
