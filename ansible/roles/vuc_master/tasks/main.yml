@@ -1,12 +1,12 @@
 ---
 # tasks file for virtual unicore cluster master image
 
-- name: Disable beegfs repo
-  lineinfile:
-    path: /etc/yum.repos.d/beegfs-rhel7.repo
-    regexp: '^enabled='
-    line: enabled=0
-  become: yes
+#- name: Disable beegfs repo
+#  lineinfile:
+#    path: /etc/yum.repos.d/beegfs-rhel7.repo
+#    regexp: '^enabled='
+#    line: enabled=0
+#  become: yes
 
 - name: Upgrade all packages
   yum:

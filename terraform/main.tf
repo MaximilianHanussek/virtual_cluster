@@ -205,10 +205,36 @@ block_device {
     }
   }
 
+  provisioner "file" {
+    source = "../beeond"
+    destination = "/home/centos/beeond"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../beegfs-ondemand-stoplocal"
+    destination = "/home/centos/beegfs-ondemand-stoplocal"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
 
 
   provisioner "remote-exec" {
     inline = [
+      "sudo mv /home/centos/beeond /opt/beegfs/sbin/beeond",
+      "sudo mv /home/centos/beegfs-ondemand-stoplocal /opt/beegfs//lib/beegfs-ondemand-stoplocal",
       "sudo mv /home/centos/configure_unicore /usr/local/bin/configure_unicore",
       "sudo mv /home/centos/start_initial_unicore_cluster /usr/local/bin/start_initial_unicore_cluster",
       "sudo mv /home/centos/add_node_to_cluster /usr/local/bin/add_node_to_cluster",
@@ -219,6 +245,8 @@ block_device {
       "sudo mv /home/centos/delete_node_from_torque /usr/local/bin/delete_node_from_torque",
       "sudo mv /home/centos/delete_from_host_file /usr/local/bin/delete_from_host_file",
       "sudo mv /home/centos/beeond-remove-storage-node /opt/beegfs/sbin/beeond-remove-storage-node",
+      "sudo chmod 777 /opt/beegfs/sbin/beeond",
+      "sudo chmod 777 /opt/beegfs/lib/beegfs-ondemand-stoplocal",
       "sudo chmod 777 /usr/local/bin/configure_unicore",
       "sudo chmod 777 /usr/local/bin/start_initial_unicore_cluster",
       "sudo chmod 777 /usr/local/bin/add_node_to_cluster",
@@ -308,6 +336,46 @@ block_device {
   provisioner "remote-exec" {
     script = "public_key_to_authorized_key_file.sh"
     
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../beeond"
+    destination = "/home/centos/beeond"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "file" {
+    source = "../beegfs-ondemand-stoplocal"
+    destination = "/home/centos/beegfs-ondemand-stoplocal"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mv /home/centos/beeond /opt/beegfs/sbin/beeond",
+      "sudo mv /home/centos/beegfs-ondemand-stoplocal /opt/beegfs//lib/beegfs-ondemand-stoplocal",
+      "sudo chmod 777 /opt/beegfs/sbin/beeond",
+      "sudo chmod 777 /opt/beegfs/lib/beegfs-ondemand-stoplocal"
+    ]
+
     connection {
       type        = "ssh"
       private_key = "${file(var.private_key_path)}"

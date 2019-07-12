@@ -23,7 +23,7 @@ echo $IP_ADDED_HOST >> /home/centos/beeond_nodefile2                    #Add new
 
 
 echo "Adding node to beegfs filesystem"
-/opt/beegfs/sbin/beeond-add-storage-node start -n /home/centos/beeond_nodefile2 -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos #Start beeond script and add node to existing beegfs filesystem
+/opt/beegfs/sbin/beeond-add-storage-node start -f /etc/beegfs/ -n /home/centos/beeond_nodefile2 -d /mnt/ -c /beeond/ -a $SSH_KEY_PATH -z centos #Start beeond script and add node to existing beegfs filesystem
 
 rm /home/centos/beeond_nodefile2 					#Delete beeond_nodefile2 as not needed anymore
 

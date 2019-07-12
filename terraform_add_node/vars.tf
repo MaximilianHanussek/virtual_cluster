@@ -12,7 +12,7 @@ variable "flavors" {
 
 
 variable "image_compute" {
-  default = "unicore_compute_centos_20190701_orig"
+  default = "unicore_compute_centos_20190711"
 }
 
 variable "next_node_number" {

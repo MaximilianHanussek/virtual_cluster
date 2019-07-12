@@ -46,12 +46,12 @@ sl_unmount_tmpfs()
 
       if [ "${CLEANUP}" != "true" ]
       then
-        sudo fuser -k ${MOUNTPOINT}
+        sudo /usr/sbin/fuser -k ${MOUNTPOINT}
         sudo umount -l ${MOUNTPOINT}
 
          sl_checkerror "unmounting tmpfs"
       else
-         sudo fuser -k ${MOUNTPOINT} 2>/dev/null
+         sudo /usr/sbin/fuser -k ${MOUNTPOINT} 2>/dev/null
          sudo umount -l ${MOUNTPOINT} 2>/dev/null
          true
       fi
@@ -67,12 +67,12 @@ sl_unmount_local_mounts()
       sl_print_info "Unmounting ${MOUNTPOINT}"
       if [ "${CLEANUP}" != "true" ]
       then
-         sudo fuser -k ${MOUNTPOINT} # no "sl_checkerror" after this, becuase fuser also returns non-zero
+         sudo /usr/sbin/fuser -k ${MOUNTPOINT} # no "sl_checkerror" after this, becuase fuser also returns non-zero
                                 # when there are no processes accessing the file system
          sudo umount -l ${MOUNTPOINT}
          sl_checkerror "unmounting the ondemand file system"
       else
-        sudo fuser -k ${MOUNTPOINT} 2>/dev/null
+        sudo /usr/sbin/fuser -k ${MOUNTPOINT} 2>/dev/null
         sudo umount -l ${MOUNTPOINT} 2>/dev/null
          true # reset error code before next invocation of sl_checkerror
       fi

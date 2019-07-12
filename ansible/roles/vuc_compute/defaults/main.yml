@@ -5,3 +5,4 @@ common_packages:
   - curl
   - wget
   - htop
+  - bc
