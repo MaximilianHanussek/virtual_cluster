@@ -23,8 +23,8 @@ In order to setup VALET you need to fulfill the following prerequisites
 This section will list the most up to date and tested images for the master and compute nodes. If you want to use older images for some reasons you will need to change the names in the Terraform`vars.tf` file. 
 
 #### Current
-- master image  : unicore_master_centos_20190702.qcow2
-- compute image : unicore_compute_centos_20190701.qcow2
+- master image  : unicore_master_centos_20190712.qcow2
+- compute image : unicore_compute_centos_20190711.qcow2
 
 #### Old
 - master image  : -
