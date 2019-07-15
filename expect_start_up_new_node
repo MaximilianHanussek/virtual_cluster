@@ -1,0 +1,15 @@
+#!/usr/bin/expect
+
+set timeout -1
+
+spawn ./start_up_new_node
+
+expect "Please enter your OpenStack Password for project demo as user demo:"
+
+interact ++ return
+
+expect "  Enter a value:\r"
+
+send -- "yes"
+
+expect eof

@@ -11,8 +11,8 @@
 
 # Get information about the hostname of the node to be removed (NODE_NAME), managment host of the beeond filesystem (MGMTD_HOST) and the path to the SSH key for the node to remove (SSH_KEY_PATH)
 NODE_NAME=$1
-MGMTD_HOST=$2
-SSH_KEY_PATH=$3
+#MGMTD_HOST=$2
+SSH_KEY_PATH=$2
 
 # Get the beegfs specific node id and the target id
 BEEGFS_NODE_ID=$(beegfs-ctl --mount=/beeond --listnodes --nodetype=storage | grep $NODE_NAME | awk '{print substr($3, 1, length($3)-1)}')	#Parse out beegfs node ID to be removed 
