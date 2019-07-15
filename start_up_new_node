@@ -7,7 +7,7 @@ cd terraform_add_node/			#Change to add node directory
 source /home/mhanussek/demo-openrc.sh	#Set path to rc file to source OpenStack API credentials
 
 terraform init				#Init terrafrom
-yes | terraform apply			#Apply node start
+terraform apply -auto-approve 		#Apply node start
 cd ..					#Change to repository root directory
 
 search_line_number=$(grep -n "unicore-master" terraform/terraform.tfstate | cut -f1 -d:)								#Get line number, after master information starts
