@@ -13,11 +13,11 @@
 SSH_KEY_PATH="/home/centos/.ssh/connection_key.pem"									#Get path to SSH key of compute nodes	
 MASTER_NODE_IP="$(cat /etc/hosts | grep master | awk {'print $1'})"							#Get master node IP (unicore-master)
 NODES_MAX="$(cat /etc/hosts | grep -c compute)"										#Get the maximal number of nodes in the cluster
-NODE_CPUS_MAX=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@unicore-compute-node-0 nproc)	#Get maximal number of CPUs per node
+NODE_CPUS_MAX=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@unicore-compute-node-0 nproc)		#Get maximal number of CPUs per node
 TOTAL_CPUS_MAX="$(expr $NODE_CPUS_MAX \* $NODES_MAX)"									#Get number of CPUs of total cluster
 NODE_MEM_TOTAL=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@unicore-compute-node-0 free -b | grep "Mem:" | awk {'print $2'})	#Get maximal number of RAM per node (in Bytes!)
 ONE_GB_IN_BYTE=1073741824												#Save value for 1GB in Bytes (Base 1024)
-NODE_MEM_MAX="$(expr $NODE_MEM_TOTAL - $ONE_GB_IN_BYTE)"									#Get final max RAM value with 1GB safety
+NODE_MEM_MAX="$(expr $NODE_MEM_TOTAL - $ONE_GB_IN_BYTE)"								#Get final max RAM value with 1GB safety
 NODE_MEM_DEFAULT=$NODE_MEM_MAX                                                          				#Set value of maximal RAM per node also as default
 
 ### Configure hostfiles and beeond_file ###

@@ -2,9 +2,10 @@
 
 #This wrapper script parses all relevant information and triggers the node adding procedure
 
+rc_file_path=$1				#Get OpenStack rc file path as cmd line input
 sh ./get_next_compute_node_number.sh 	#Start script to parse out next node number
 cd terraform_add_node/			#Change to add node directory
-source /home/mhanussek/demo-openrc.sh	#Set path to rc file to source OpenStack API credentials
+source $rc_file_path			#Set path to rc file to source OpenStack API credentials
 
 terraform init				#Init terrafrom
 terraform apply -auto-approve 		#Apply node start

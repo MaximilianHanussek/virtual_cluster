@@ -1,0 +1,67 @@
+#!/bin/bash
+
+SSH_KEY_PATH=$1								#Get path to SSH key of compute nodes   
+MASTER_NODE_IP="$(cat /etc/hosts | grep master | awk {'print $1'})"	#Get master node IP (unicore-master)
+ONE_GB_IN_BYTE=1073741824						#Save value for 1GB in Bytes (Base 1024)
+NODES_MAX_UPDATE="$(cat /etc/hosts | grep -c compute)"			#Get the maximal number of node in the cluster
+TOTAL_CPUS_MAX=0							#Initialize the variable for the maximal total number of CPUs in the cluster
+NODE_CPUS_MAX_FINAL=0							#Initialize the variable for the maximal per node number of CPUs in the cluster
+NODE_MEM_MAX=0								#Initialize the variable for the maximal per node number of RAM in the cluster
+
+#Define own function to find maximum
+function max ()	
+{
+	if [ $1 -gt $2 ]
+	then 
+		local MAX=$1
+		echo $MAX
+	else
+		local MAX=$2
+		echo $MAX
+	fi
+}
+
+
+cat /etc/hosts | awk '{print $1}' > /home/centos/host_ip_list		#Get the list of all known nodes on the masternode
+
+while read host_ip; do							#Iterate over all IPs of the list generated above
+        if ! [[ $host_ip == "127.0.0.1" || $host_ip == "::1" || $host_ip == "" || $host_ip == "$MASTER_NODE_IP" ]];	#Exclude uninteresting stuff from the hosts file 
+        then
+		NODE_CURRENT_CPUS=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_ip nproc)		#Get number of CPUs from node
+		NODE_CPUS_MAX_FINAL=$(max $NODE_CPUS_MAX_FINAL $NODE_CURRENT_CPUS)					#Get current maximum number of CPUs from one node
+		TOTAL_CPUS_MAX=$(($TOTAL_CPUS_MAX + $NODE_CURRENT_CPUS))						#Get number of total number (sum) of all CPUs 
+		NODE_CURRENT_MEM=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_ip free -b | grep "Mem:" | awk {'print $2'})	#Get maximal number of RAM per node (in Bytes!)
+		NODE_MEM_MAX=$(max $NODE_MEM_MAX $NODE_CURRENT_MEM)							#Get current maximum number of RAM from one node
+		NODE_MEM_MAX_CORRECTED="$(expr $NODE_MEM_MAX - $ONE_GB_IN_BYTE)"					#Get final max RAM value with 1GB safety
+	fi
+done </home/centos/host_ip_list						#Give file as input for the loop
+rm -f /home/centos/host_ip_list						#Delete generated host_ip_list
+
+simpleidb_path="/usr/local/unicore-servers-7.9.0/unicorex/conf/simpleidb"	#Filepath to UNICORE simpleidb file
+
+#Set memory per node upper bound value
+search_block_line_number=$(sudo grep -n "<!-- Memory per node (bytes) -->" $simpleidb_path | cut -f1 -d:)      				#Get line number, after memory information starts
+search_line_number=$(expr $(sudo tail -n +$search_block_line_number $simpleidb_path | grep -n -m 1 "UpperBound" | cut -f1 -d:) - 1)	#Get line number for upper bound in memory block
+search_line_number_final=$(( $search_block_line_number + $search_line_number))								#Add line numbers to get final line number
+sudo sed -i "${search_line_number_final}s/.*/          <jsdl:UpperBound>$NODE_MEM_MAX_CORRECTED<\/jsdl:UpperBound>/" "$simpleidb_path"	#Replace old memory value with new one
+
+
+#Set CPUs per node upper bound value
+search_block_line_number=$(sudo grep -n "<!-- CPUs per node -->" $simpleidb_path | cut -f1 -d:)      					#Get line number, after CPU information starts
+search_line_number=$(expr $(sudo tail -n +$search_block_line_number $simpleidb_path | grep -n -m 1 "UpperBound" | cut -f1 -d:) - 1)	#Get line number for upper bound in CPU per node block
+search_line_number_final=$(( $search_block_line_number + $search_line_number))								#Add line numbers to get final line number
+sudo sed -i "${search_line_number_final}s/.*/          <jsdl:UpperBound>$NODE_CPUS_MAX_FINAL<\/jsdl:UpperBound>/" "$simpleidb_path"	#Replace old cpu per node value with new one
+
+
+#Set total nodes upper bound value
+search_block_line_number=$(sudo grep -n "<!-- Nodes -->" $simpleidb_path | cut -f1 -d:)                                         	#Get line number, after node information starts
+search_line_number=$(expr $(sudo tail -n +$search_block_line_number $simpleidb_path | grep -n -m 1 "UpperBound" | cut -f1 -d:) - 1)     #Get line number for upper bound in total nodes block
+search_line_number_final=$(( $search_block_line_number + $search_line_number))                                                          #Add line numbers to get final line number
+sudo sed -i "${search_line_number_final}s/.*/          <jsdl:UpperBound>$NODES_MAX_UPDATE<\/jsdl:UpperBound>/" "$simpleidb_path"     	#Replace old total node value with new one
+
+#Set total CPUs upper bound value
+search_block_line_number=$(sudo grep -n "<!-- total CPUs -->" $simpleidb_path | cut -f1 -d:)                                            #Get line number, after total CPU information starts
+search_line_number=$(expr $(sudo tail -n +$search_block_line_number $simpleidb_path | grep -n -m 1 "UpperBound" | cut -f1 -d:) - 1)     #Get line number for upper bound in total CPU block
+search_line_number_final=$(( $search_block_line_number + $search_line_number))                                                          #Add line numbers to get final line number
+sudo sed -i "${search_line_number_final}s/.*/          <jsdl:UpperBound>$TOTAL_CPUS_MAX<\/jsdl:UpperBound>/" "$simpleidb_path"        	#Replace old total CPU value with new one
+

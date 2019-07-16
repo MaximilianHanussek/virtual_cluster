@@ -146,6 +146,19 @@ block_device {
   }
   
   provisioner "file" {
+    source = "../update_unicore_resources"
+    destination = "/home/centos/update_unicore_resources"
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+    }
+  }
+
+
+  provisioner "file" {
     source = "../beeond-add-storage-node"
     destination = "/home/centos/beeond-add-storage-node"
 
@@ -240,6 +253,7 @@ block_device {
       "sudo mv /home/centos/add_node_to_cluster /usr/local/bin/add_node_to_cluster",
       "sudo mv /home/centos/add_node_to_torque /usr/local/bin/add_node_to_torque",
       "sudo mv /home/centos/add_to_host_file /usr/local/bin/add_to_host_file",
+      "sudo mv /home/centos/update_unicore_resources //usr/local/bin/update_unicore_resources",
       "sudo mv /home/centos/beeond-add-storage-node /opt/beegfs/sbin/beeond-add-storage-node",
       "sudo mv /home/centos/remove_node_from_cluster /usr/local/bin/remove_node_from_cluster",
       "sudo mv /home/centos/delete_node_from_torque /usr/local/bin/delete_node_from_torque",
@@ -252,6 +266,7 @@ block_device {
       "sudo chmod 777 /usr/local/bin/add_node_to_cluster",
       "sudo chmod 777 /usr/local/bin/add_node_to_torque",
       "sudo chmod 777 /usr/local/bin/add_to_host_file",
+      "sudo chmod 777 /usr/local/bin/update_unicore_resources",
       "sudo chmod 777 /opt/beegfs/sbin/beeond-add-storage-node",
       "sudo chmod 777 /usr/local/bin/remove_node_from_cluster",
       "sudo chmod 777 /usr/local/bin/delete_node_from_torque",

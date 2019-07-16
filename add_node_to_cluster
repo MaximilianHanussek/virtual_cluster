@@ -28,3 +28,6 @@ rm /home/centos/beeond_nodefile2 					#Delete beeond_nodefile2 as not needed any
 
 echo "Adding node to torque cluster"
 add_node_to_torque $NAME_ADDED_HOST $SSH_KEY_PATH                       #Execute add_node_to_torque script (/usr/local/bin) to make torque aware of the new node
+
+echo "Update UNICORE resources"
+update_unicore_resources $SSH_KEY_PATH					#Execute update_unicore_resources (/usr/local/bin) to make UNICORE aware of the new resources
