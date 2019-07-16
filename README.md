@@ -90,7 +90,9 @@ Change into the terraform directory if not already done and open the `vars.tf` f
 * flavors: Sets the used compute resources (CPUs, RAM, ...) Recommended for the master node are 8 CPUs and at least 16GB RAM.
 * compute_node_count: Sets the number of compute nodes (current configuration works only with two). 
 * image_master (name): Sets the image name to be used for the master node. Will be downloaded automatically. 
-* image_compute: Sets the image to be used for the master node. Will be downloaded automatically.
+* image_compute (name): Sets the image name to be used for the master node. Will be downloaded automatically.
+* image_master (image_source_url): Download URL to the master node image, please set to name of current master image you will find above.
+* image_compute (image_source_url): Download URL to the compute node image, please set to name of current compute image you will find above.
 * openstack_key_name: Sets the SSH key name of your OpenStack environment (Keypair is required to be set up already). 
 * private_key_path: Sets the path to your private key in order to access the VMs and run configuration scripts.
 * name_prefix: Sets a prefix for the names of the starting VMs
