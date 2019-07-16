@@ -66,6 +66,7 @@ changes, it is recommended to add version = "..." constraints to the
 corresponding provider blocks in configuration, with the constraint strings
 suggested below.
 
+* provider.local: version = "~> 1.3"
 * provider.openstack: version = "~> 1.19"
 * provider.tls: version = "~> 2.0"
 
