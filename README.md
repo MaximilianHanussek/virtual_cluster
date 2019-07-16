@@ -162,27 +162,7 @@ After some minutes you will have a new node added to your existng cluster.
 
 ### 7. Remove a node from the cluster
 For the case you want to free some resources and want to downgarde your current cluster we also provide a removing procedure.
-Please change into the root directory of the repository and run the following script
-<pre></pre>
+Please change into the root directory of the repository and run the following script:
+<pre>sh stop_node</pre>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+The lastly added node will be chosen to be removed from the cluster. First no new jobs are allowed to be scheduled onn the node for removal. After all currently running jobs on this node are finished the node is removed from TORQUE. In the next step the node is removed from the BeeOND shared file system. First no new data has to be written to the volume of this node. Then all the data distributed on this node is migarted to the other nodes (if possible, means enough capacity is left). At the end the node is deleted from the hopst file on the master node and therefore completely decoupled. In the future we also plan to completely destroy the VM and free the resources. Also planned is to update the available resources through UNICORE.
