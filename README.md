@@ -89,7 +89,7 @@ Change into the terraform directory if not already done and open the `vars.tf` f
 * beeond_storage_backend: Sets the name of the storage backend for the cinder volumes, choose the appropriate of your cloud site.
 * flavors: Sets the used compute resources (CPUs, RAM, ...) Recommended for the master node are 8 CPUs and at least 16GB RAM.
 * compute_node_count: Sets the number of compute nodes (current configuration works only with two). 
-* image_master: Sets the image to be used for the master node. Will be downloaded automatically. 
+* image_master (name): Sets the image name to be used for the master node. Will be downloaded automatically. 
 * image_compute: Sets the image to be used for the master node. Will be downloaded automatically.
 * openstack_key_name: Sets the SSH key name of your OpenStack environment (Keypair is required to be set up already). 
 * private_key_path: Sets the path to your private key in order to access the VMs and run configuration scripts.
@@ -97,19 +97,21 @@ Change into the terraform directory if not already done and open the `vars.tf` f
 * security_groups: Sets the names and the security groups itself (do not need be to exist)
 * network: Sets the network to be used
 
-| Variable               | Default value                 | Unit             | Change               |
-| ---------------------- |:-----------------------------:|:----------------:| -------------------- |
-| beeond_disc_size       | 10                            | Gigabytes        | yes (not required)   |
-| beeond_storage_backend | quobyte_hdd                   |     -            | yes (poss. required) |
-| flavors                | de.NBI small disc             | 8 CPUs, 16GB RAM | yes (poss. required) |
-| compute_node_count     | 2                             | Instances        | no                   |
-| image_master           | unicore_master_centos         |     -            | no                   |
-| image_compute          | unicore_compute_centos        |     -            | no                   |
-| openstack_key_name     | test                          |     -            | yes (required)       |
-| private_key_path       | /path/to/private/key          |     -            | yes (required)       |
-| name_prefix            | unicore-                      |     -            | no                   |
-| security_groups        | virtual-unicore-cluster-public|     -            | no                   |
-| network                | denbi_uni_tuebingen_external  |     -            | yes (poss. required) |
+| Variable                           | Default value                   | Unit             | Change               |
+| ---------------------------------- |:-------------------------------:|:----------------:| -------------------- |
+| beeond_disc_size                   | 10                              | Gigabytes        | yes (not required)   |
+| beeond_storage_backend             | quobyte_hdd                     |     -            | yes (poss. required) |
+| flavors                            | de.NBI small disc               | 8 CPUs, 16GB RAM | yes (poss. required) |
+| compute_node_count                 | 2                               | Instances        | no                   |
+| image_master (name)                | unicore_master_centos_IMAGEDATE |     -            | yes (not required)   |
+| image_compute (name)               | unicore_compute_centos_IMAGEDATE|     -            | yes (not required)   |
+| image_master (image_source_url)    | unicore_master_centos_IMAGEDATE |     -            | yes (not required)   |
+| image_compute (image_source_url)   | unicore_compute_centos_IMAGEDATE|     -            | yes (not required)   |
+| openstack_key_name                 | test                            |     -            | yes (required)       |
+| private_key_path                   | /path/to/private/key            |     -            | yes (required)       |
+| name_prefix                        | unicore-                        |     -            | no                   |
+| security_groups                    | virtual-unicore-cluster-public  |     -            | no                   |
+| network                            | denbi_uni_tuebingen_external    |     -            | yes (poss. required) |
 
 ### 4. Start Terraform setup
 After the Terraform variables are setup correctly we can go on to start the configuration process.
@@ -149,7 +151,19 @@ Click on the play button chose the available worjkflow engine and click on finis
 For further complex workflows and further explanations on UNICORE we refer to the official documentation which you can find [here](https://www.unicore.eu/documentation/).
 
 
+### 6. Start and add new node to existing cluster
+It might happen that the initial cluster resources are not sufficient for the applied workload and more nodes could solve the problem. For this case we provide a mechanism that will automatically start a new node (via terraform). Add the new 
+node to the already existing BeeOND file system and also make it available as a resource for the  batch system (TORQUE).
+An upcoming feature is that the resources will also be added correctly to UNICORE so the new resource (node) is integrated correctly and working. In order to add a new node you only have to go in the root repository directory where you find the script `start_up_new_node`. This wrapper script takes care of the further execution tasks. The only thing you need to do is to enter the path to your rc file and type in the corresponidng password if you are asked for it.
+<pre>sh start_up_new_node /path/to/rc/file</pre>
 
+After some minutes you will have a new node added to your existng cluster.
+
+
+### 7. Remove a node from the cluster
+For the case you want to free some resources and want to downgarde your current cluster we also provide a removing procedure.
+Please change into the root directory of the repository and run the following script
+<pre></pre>
 
 
 
