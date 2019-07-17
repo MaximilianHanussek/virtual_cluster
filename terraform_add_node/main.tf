@@ -1,4 +1,4 @@
-data "openstack_images_image_v2" "image_compute" {
+data "openstack_images_image_v2" "vuc-image-compute" {
   name = "${var.image_compute}"
   most_recent = true
 }

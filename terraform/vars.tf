@@ -60,7 +60,7 @@ variable "security_groups" {
 variable "network" {
   default = [
     {
-      name = "denbi_uni_tuebingen_external"
+      name = "demo_external"
     },
   ]
 }

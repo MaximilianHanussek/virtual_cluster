@@ -44,11 +44,16 @@ while read host_ip; do                                                          
                 scp -i $SSH_KEY_PATH /etc/hosts centos@$host_ip:/home/centos            		#Copy /etc/hosts file from masternode to home directory of new node
                 ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_ip sudo mv /home/centos/hosts /etc/hosts   #Replace old hosts file with new file, two steps are necessary to permissions
 		echo $host_ip >> /home/centos/beeond_nodefile                                   	#Add host IP to beeond_nodefile to later start beeond
-                scp -i $SSH_KEY_PATH /home/centos/beegfs-mgmtd.conf centos@$host_ip:/home/centos/	#Copy beegfs-mgmtd.conf file from masternode to home directory of new node
-                ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_ip sudo mv /home/centos/beegfs-mgmtd.conf /opt/beegfs/sbin/beegfs-mgmtd.conf #Move beegfs-mgmtd.conf to /opt/beegfs/sbin dir
+
+		if ! [[ $host_ip == $MASTER_NODE_IP ]];
+		then
+                	scp -i $SSH_KEY_PATH /home/centos/beegfs-mgmtd.conf centos@$host_ip:/home/centos/	#Copy beegfs-mgmtd.conf file from masternode to home directory of new node
+                	ssh -n -o StrictHostKeyChecking=no -i $SSH_KEY_PATH centos@$host_ip sudo mv /home/centos/beegfs-mgmtd.conf /opt/beegfs/sbin/beegfs-mgmtd.conf #Move beegfs-mgmtd.conf to /opt/beegfs/sbin dir
+		fi
         fi
 done </home/centos/host_ip_list                                                         #Give file as input for the loop
 rm -f /home/centos/host_ip_list                                                         #Delete generated host_ip_list
+rm -f /home/centos/beegfs-mgmtd.conf
 
 
 ### Start BeeOND filesystem ###

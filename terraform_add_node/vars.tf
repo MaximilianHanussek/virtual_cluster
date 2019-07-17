@@ -11,7 +11,7 @@ variable "flavors" {
 }
 
 
-variable "image_compute" {
+variable "vuc-image-compute" {
   default = "unicore_compute_centos_20190711"
 }
 
@@ -45,7 +45,7 @@ variable "security_groups" {
 variable "network" {
   default = [
     {
-      name = "denbi_uni_tuebingen_external"
+      name = "demo_external"
     },
   ]
 }

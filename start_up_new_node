@@ -20,4 +20,4 @@ SSH_PATH_MASTER=$(awk '/private_key_path/{getline; print}' terraform/vars.tf | a
 
 ssh -n -o StrictHostKeyChecking=no -i $SSH_PATH_MASTER centos@$IP_MASTER_NODE "add_node_to_cluster $NEW_NODE_IP $NEW_NODE_HOSTNAME $SSH_PATH_LOCAL"	#Start new node over script on master node
 
-rm terraform_add_node/terraform.tfstate															#Remove terraform state file possibly start further nodes
+#rm terraform_add_node/terraform.tfstate															#Remove terraform state file possibly start further nodes
