@@ -1,7 +1,0 @@
-2019/07/15 12:50:01 [INFO] Terraform version: 0.11.13  
-2019/07/15 12:50:01 [INFO] Go runtime version: go1.11.5
-2019/07/15 12:50:01 [INFO] CLI args: []string{"/usr/local/bin/terraform", "apply", "--help"}
-2019/07/15 12:50:01 [DEBUG] Attempting to open CLI config file: /home/mhanussek/.terraformrc
-2019/07/15 12:50:01 [DEBUG] File doesn't exist, but doesn't need to. Ignoring.
-2019/07/15 12:50:01 [INFO] CLI command args: []string{"apply", "--help"}
-2019/07/15 12:50:01 [DEBUG] plugin: waiting for all plugin processes to complete...
