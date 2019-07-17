@@ -1,8 +1,2 @@
-;[openstack-compute-node]
-;compute_node ansible_host=172.20.10.62 ansible_user=root ansible_ssh_pass=PASSWORD
-
-;[openstack-compute-node-gpu]
-;compute_node_gpu ansible_host=172.20.10.61 ansible_user=root ansible_ssh_pass=PASSWORD
-
 ;[vuc-master-image-creation]
-vuc_master ansible_host=193.196.20.75 ansible_user=centos ansible_ssh_private_key_file=/home/mhanussek/Zertifikate/maximilian-demo.pem
+vuc_master ansible_host=IP ansible_user=centos ansible_ssh_private_key_file=SSH_PATH
