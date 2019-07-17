@@ -2,14 +2,15 @@
 
 #This wrapper script parses all relevant information and triggers the node adding procedure
 
-rc_file_path=$1				#Get OpenStack rc file path as cmd line input
-sh ./get_next_compute_node_number.sh 	#Start script to parse out next node number
-cd terraform_add_node/			#Change to add node directory
-source $rc_file_path			#Set path to rc file to source OpenStack API credentials
+rc_file_path=$1					#Get OpenStack rc file path as cmd line input
+sh ./get_next_compute_node_number.sh 		#Start script to parse out next node number
+next_node_number=$(cat next_node_number)        #Save next node number in variable
+cd terraform_add_node/				#Change to add node directory
+source $rc_file_path				#Set path to rc file to source OpenStack API credentials
 
-terraform init				#Init terrafrom
-terraform apply -auto-approve 		#Apply node start
-cd ..					#Change to repository root directory
+terraform init					#Init terrafrom
+terraform apply -auto-approve 			#Apply node start
+cd ..						#Change to repository root directory
 
 search_line_number=$(grep -n "unicore-master" terraform/terraform.tfstate | cut -f1 -d:)								#Get line number, after master information starts
 IP_MASTER_NODE=$(tail -n +$search_line_number terraform/terraform.tfstate | grep "network.0.fixed_ip_v4" | awk -F ': "' '{print $2}' | head -c -3)	#Get public IP of master node
@@ -20,4 +21,7 @@ SSH_PATH_MASTER=$(awk '/private_key_path/{getline; print}' terraform/vars.tf | a
 
 ssh -n -o StrictHostKeyChecking=no -i $SSH_PATH_MASTER centos@$IP_MASTER_NODE "add_node_to_cluster $NEW_NODE_IP $NEW_NODE_HOSTNAME $SSH_PATH_LOCAL"	#Start new node over script on master node
 
-#rm terraform_add_node/terraform.tfstate															#Remove terraform state file possibly start further nodes
+terraform state mv -state=terraform_add_node/terraform.tfstate -state-out=terraform/terraform.tfstate openstack_compute_instance_v2.compute openstack_compute_instance_v2.compute[$next_node_number]
+
+rm terraform_add_node/terraform.tfstate*														#Remove terraform state file possibly start further nodes
+rm terraform/terraform.tfstate.*															#Remove terraform state file backups

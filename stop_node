@@ -1,10 +1,20 @@
 #!/bin/bash
 
+rc_file_path=$1                                 #Get OpenStack rc file path as cmd line input
 search_line_number=$(grep -n "unicore-master" terraform/terraform.tfstate | cut -f1 -d:)
 IP_MASTER_NODE=$(tail -n +$search_line_number terraform/terraform.tfstate | grep "network.0.fixed_ip_v4" | awk -F ': "' '{print $2}' | head -c -3)
 SSH_PATH_LOCAL="/home/centos/.ssh/connection_key.pem"
 SSH_PATH_MASTER=$(awk '/private_key_path/{getline; print}' terraform/vars.tf | awk -F ' = "' '{print $2}' | head -c -2)
 HIGHEST_USED_NODE_NAME=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_PATH_MASTER centos@$IP_MASTER_NODE tail -n 1 /etc/hosts | awk -F' ' '{print $2}')
-echo $HIGHEST_USED_NODE_NAME
+HIGHEST_USED_NODE_NUMBER=$(echo $HIGHEST_USED_NODE_NAME | awk -F"-" '{print $4}')
 
 ssh -n -o StrictHostKeyChecking=no -i $SSH_PATH_MASTER centos@$IP_MASTER_NODE "remove_node_from_cluster $HIGHEST_USED_NODE_NAME $SSH_PATH_LOCAL"
+cd terraform 					#Change to add node directory
+source $rc_file_path                            #Set path to rc file to source OpenStack API credentials
+
+terraform init                                  #Init terrafrom
+terraform destroy -auto-approve -target=openstack_compute_instance_v2.compute[$HIGHEST_USED_NODE_NUMBER]
+cd ..
+rm -f terraform/terraform.tfstate.*		#Clean up backups
+
+

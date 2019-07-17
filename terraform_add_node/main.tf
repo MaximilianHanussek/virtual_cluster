@@ -1,5 +1,5 @@
 data "openstack_images_image_v2" "vuc-image-compute" {
-  name = "${var.image_compute}"
+  name = "${var.vuc-image-compute}"
   most_recent = true
 }
 
@@ -13,14 +13,14 @@ resource "openstack_blockstorage_volume_v2" "beeond_volume_compute" {
 resource "openstack_compute_instance_v2" "compute" {
   name            = "${var.name_prefix}compute-node-${file(var.next_node_number)}"
   flavor_name     = "${var.flavors}"
-  image_id        = "${data.openstack_images_image_v2.image_compute.id}"
+  image_id        = "${data.openstack_images_image_v2.vuc-image-compute.id}"
   key_pair        = "${var.openstack_key_name}"
 #  key_pair        = "${file(var.initial_cluster_connection_key_public)}"
   security_groups = "${var.security_groups}"
   network         = "${var.network}"
 
 block_device {
-    uuid                  = "${data.openstack_images_image_v2.image_compute.id}"
+    uuid                  = "${data.openstack_images_image_v2.vuc-image-compute.id}"
     source_type           = "image"
     destination_type      = "local"
     boot_index            = 0
