@@ -1,0 +1,9 @@
+[Unit]
+Description=Timer for VALET_scheduler starts every X min (currently 1min), triggering VALET_scheduler.service
+
+[Timer]
+OnCalendar=*:00/01
+
+[Install]
+WantedBy=timers.target
+

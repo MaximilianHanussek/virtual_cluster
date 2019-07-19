@@ -1,0 +1,9 @@
+[Unit]
+Description=Starts the scheduler of the VALET on demand cluster
+
+[Service]
+Type=simple
+ExecStart=/path/to/virtual_cluster_scheduler
+
+[Install]
+WantedBy=multi-user.target

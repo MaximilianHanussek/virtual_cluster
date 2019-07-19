@@ -48,7 +48,7 @@ if [ -f /home/centos/.virtual_cluster_stats_start ]; then                       
 	else
 		if (( $(echo "$sum_of_weights_start >= $start_threshold" | bc -l) )); then                      #Check if starting weights sum is higher than starting threshold
 			if [[ $cluster_nodes_capacity < $mnc ]]; then
-				echo "Start new node based on last timesteps"                                               #Start new node
+				echo "Start new node based on cluster_stats_start file"                                               #Start new node
 				rm -f /home/centos/.virtual_cluster_stats_start                                             #Remove .virtual_cluster_stats_start as reset
 				exit 1;									    #Stop execution of the script and skip the rest
 			else

@@ -1,9 +1,0 @@
-[Unit]
-Description=Scheduler of the VALET on demand cluster
-
-[Service]
-Type=simple
-ExecStart=/home/mhanussek/git_own/virtual_cluster/virtual_cluster_scheduler
-
-[Install]
-WantedBy=multi-user.target
