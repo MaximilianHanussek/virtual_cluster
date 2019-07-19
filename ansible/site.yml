@@ -2,5 +2,5 @@
 - hosts: all
 #  become: yes
   roles:
-    - vuc_master
+    - vuc_compute
 

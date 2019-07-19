@@ -36,6 +36,7 @@ sudo sed -i "/^uxMemoryPerNodeMax=/c\uxMemoryPerNodeMax=$NODE_MEM_MAX" $PROPERTI
 sudo sed -i "/^uxMemoryPerNodeDefault=/c\uxMemoryPerNodeDefault=$NODE_MEM_DEFAULT" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^uxNodesMax/c\uxNodesMax=$NODES_MAX" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^tsiHost=/c\tsiHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxXnjsConfigFile=/c\uxXnjsConfigFile=xnjs_legacy.xml" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^xuudbHost=/c\xuudbHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^registryHost=/c\registryHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^INSTALL_PATH=/c\INSTALL_PATH=/usr/local/unicore-servers-7.9.0" $PROPERTIES_FILE_SERVER
@@ -43,7 +44,7 @@ sudo sed -i "/^registry=/c\registry=true" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^gwAutoRegistration=/c\gwAutoRegistration=true" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^uxMemory=/c\uxMemory=1024" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^uxEnableStorageFactory=/c\uxEnableStorageFactory=true" $PROPERTIES_FILE_SERVER
-sudo sed -i "/^uxDefaultStorageFactoryPath=/c\uxDefaultStorageFactoryPath=/beeond/" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxDefaultStorageFactoryPath=/c\uxDefaultStorageFactoryPath=/beeond" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^uxTSIStatusUpdateInterval=/c\uxTSIStatusUpdateInterval=5000" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^uxTSIWorkingDirectoriesBasedir=/c\uxTSIWorkingDirectoriesBasedir=/beeond" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^tsiSelected=/c\tsiSelected=torque" $PROPERTIES_FILE_SERVER

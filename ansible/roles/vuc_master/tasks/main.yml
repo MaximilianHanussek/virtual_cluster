@@ -175,13 +175,6 @@
     remote_src: yes
   become: yes
 
-#- name: Unarchive UNICORE-workflow component
-#  command: tar -xf /usr/local/unicore-workflow-7.9.1.tgz
-#  become: yes
-
-#- name: Delete UNICORE-workflow component archive
-#  command: rm /usr/local/unicore-workflow-7.9.1.tgz
-
 - name: Change permissions of unicore-servers-7.9.0 directory
   command: chmod 777 /usr/local/unicore-servers-7.9.0
   become: yes

@@ -12,7 +12,7 @@ variable "flavors" {
 
 
 variable "vuc-image-compute" {
-  default = "unicore_compute_centos_20190711"
+  default = "unicore_compute_centos_20190719"
 }
 
 variable "next_node_number" {

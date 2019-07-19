@@ -48,13 +48,14 @@
 - name: Remove beeond_nodefile from home directory (unneccessary)
   command: rm -f /home/centos/beeond_nodefile
 
+- name: Create user unicore
+  command: adduser unicore
+  become: yes
+
 - name: Copy torque-package-mom-linux-x86_64.sh to remote host
   copy:
     src: torque-package-mom-linux-x86_64.sh
     dest: /home/centos/torque-package-mom-linux-x86_64.sh
-
-#- name: Trigger torque mom installation
-#  shell: sudo su - root -c "sh /home/centos/torque-package-mom-linux-x86_64.sh --install"
 
 - name: Trigger torque mom installation
   command: sh /home/centos/torque-package-mom-linux-x86_64.sh --install

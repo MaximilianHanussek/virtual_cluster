@@ -31,8 +31,8 @@ variable "image_master" {
 variable "image_compute" {
   type = "map"
   default = {
-    "name" = "unicore_compute_centos_20190711"
-    "image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_compute_centos_20190711.qcow2"
+    "name" = "unicore_compute_centos_20190719"
+    "image_source_url" = "https://s3.denbi.uni-tuebingen.de/max/unicore_compute_centos_20190719.qcow2"
     "container_format" = "bare"
     "disk_format" = "qcow2"
    }
