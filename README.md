@@ -24,7 +24,7 @@ This section will list the most up to date and tested images for the master and 
 
 #### Current
 - master image  : unicore_master_centos_20190712.qcow2
-- compute image : unicore_compute_centos_20190711.qcow2
+- compute image : unicore_compute_centos_20190719.qcow2
 
 #### Old
 - master image  : -
