@@ -17,7 +17,11 @@ resource "openstack_compute_instance_v2" "compute" {
   key_pair        = "${var.openstack_key_name}"
 #  key_pair        = "${file(var.initial_cluster_connection_key_public)}"
   security_groups = "${var.security_groups}"
-  network         = "${var.network}"
+#  network         = "${var.network}"
+  network {
+    name = "${var.network}"
+  }
+
 
 block_device {
     uuid                  = "${data.openstack_images_image_v2.vuc-image-compute.id}"
