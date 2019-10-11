@@ -1,3 +1,14 @@
+#data "openstack_images_image_v2" "image_master" {
+#  name = "${var.image_master["name"]}"
+#  most_recent = true
+#}
+
+#data "openstack_images_image_v2" "image_compute" {
+#  name = "${var.image_compute["name"]}"
+#  most_recent = true
+#}
+
+
 resource "openstack_blockstorage_volume_v2" "beeond_volume_master" {
   name 		= "${var.name_prefix}beeond_volume_master"
   size 		= "${var.beeond_disk_size}"
@@ -15,6 +26,7 @@ resource "openstack_blockstorage_volume_v2" "beeond_volume_compute" {
 resource "openstack_compute_instance_v2" "master" {
   name            = "${var.name_prefix}master"
   flavor_name     = "${var.flavors["master"]}"
+#  image_id        = "${data.openstack_images_image_v2.image_master.id}"
   image_id        = "${openstack_images_image_v2.vuc-image-master.id}"
   key_pair        = "${var.openstack_key_name}"
   security_groups = "${var.security_groups}"
@@ -25,6 +37,7 @@ resource "openstack_compute_instance_v2" "master" {
 
 block_device {
     uuid                  = "${openstack_images_image_v2.vuc-image-master.id}"
+#    uuid		  = "${data.openstack_images_image_v2.image_master.id}"
     source_type           = "image"
     destination_type      = "local"
     boot_index            = 0
@@ -47,6 +60,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -59,6 +73,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   } 
 
@@ -70,6 +85,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -85,6 +101,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
   
@@ -97,6 +114,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -109,6 +127,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -121,6 +140,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -133,6 +153,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -145,6 +166,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
   
@@ -157,6 +179,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -170,6 +193,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -182,6 +206,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -194,6 +219,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -206,6 +232,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -218,6 +245,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -230,6 +258,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -242,6 +271,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -282,6 +312,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 
@@ -298,6 +329,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
 }
@@ -306,6 +338,7 @@ resource "openstack_compute_instance_v2" "compute" {
   count           = "${var.compute_node_count}"
   name            = "${var.name_prefix}compute-node-${count.index}"
   flavor_name     = "${var.flavors["compute"]}"
+#  image_id        = "${data.openstack_images_image_v2.image_compute.id}"
   image_id        = "${openstack_images_image_v2.vuc-image-compute.id}"
 #  key_pair        = "${openstack_compute_keypair_v2.my-cloud-key.name}"
   key_pair        = "${var.openstack_key_name}"
@@ -318,6 +351,7 @@ resource "openstack_compute_instance_v2" "compute" {
 
 block_device {
     uuid                  = "${openstack_images_image_v2.vuc-image-compute.id}"
+#    uuid		  = "${data.openstack_images_image_v2.image_compute.id}"
     source_type           = "image"
     destination_type      = "local"
     boot_index            = 0
@@ -325,7 +359,7 @@ block_device {
   }
 
 block_device {
-    uuid                  = "${element(openstack_images_image_v2.beeond_volume_compute.*.id, count.index)}"
+    uuid                  = "${element(openstack_blockstorage_volume_v2.beeond_volume_compute.*.id, count.index)}"
     source_type           = "volume"
     destination_type      = "volume"
     boot_index            = -1
@@ -351,6 +385,8 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+#      host        = "${element(openstack_compute_instance_v2.compute.*.access_ip_v4, count.index)}"
+     host	  = "${self.access_ip_v4}"
     }
   }
 
@@ -363,6 +399,8 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+#      host        = "${element(openstack_compute_instance_v2.compute.*.access_ip_v4, count.index)}"
+     host         = "${self.access_ip_v4}"
     }
   }
   
@@ -374,6 +412,8 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+#      host        = "${element(openstack_compute_instance_v2.compute.*.network.0.access_ip_v4, count.index)}"
+     host         = "${self.access_ip_v4}"
     }
   }
 
@@ -386,6 +426,8 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+#      host        = "${element(openstack_compute_instance_v2.compute.*.access_ip_v4, count.index)}"
+     host         = "${self.access_ip_v4}"
     }
   }
 
@@ -398,6 +440,8 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+#      host        = "${element(openstack_compute_instance_v2.compute.*.access_ip_v4, count.index)}"
+     host         = "${self.access_ip_v4}"
     }
   }
 
@@ -414,6 +458,8 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+#      host        = "${element(openstack_compute_instance_v2.compute.*.access_ip_v4, count.index)}"
+     host         = "${self.access_ip_v4}"
     }
   }
 }
