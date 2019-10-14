@@ -3,7 +3,7 @@
 #title           :configure_unicore
 #description     :This script will configure and start the UNICORE components
 #author          :Maximilian Hanussek
-#date            :2019-07-02
+#date            :2019-10-15
 #version         :1.3
 #usage           :sh configure_unicore MASTER_NODE_IP TOTAL_CPUS_MAX NODE_CPUS_MAX NODE_MEM_MAX NODES_MAX
 #notes           :Needs five parameter: IP of the master node, Sum of total CPUs, Maximum of CPUs per node, Maximum of RAM per node (in Bytes), Maximum number of nodes
@@ -36,7 +36,7 @@ sudo sed -i "/^uxMemoryPerNodeMax=/c\uxMemoryPerNodeMax=$NODE_MEM_MAX" $PROPERTI
 sudo sed -i "/^uxMemoryPerNodeDefault=/c\uxMemoryPerNodeDefault=$NODE_MEM_DEFAULT" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^uxNodesMax/c\uxNodesMax=$NODES_MAX" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^tsiHost=/c\tsiHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
-sudo sed -i "/^uxXnjsConfigFile=/c\uxXnjsConfigFile=xnjs_legacy.xml" $PROPERTIES_FILE_SERVER
+sudo sed -i "/^uxXnjsConfigFile=/c\uxXnjsConfigFile=xnjs_legacy.xml" $PROPERTIES_FILE_SERVER #Important that job is scheduled to compute nodes
 sudo sed -i "/^xuudbHost=/c\xuudbHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^registryHost=/c\registryHost=$MASTER_NODE_IP" $PROPERTIES_FILE_SERVER
 sudo sed -i "/^INSTALL_PATH=/c\INSTALL_PATH=/usr/local/unicore-servers-7.9.0" $PROPERTIES_FILE_SERVER
