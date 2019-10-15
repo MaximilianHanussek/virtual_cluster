@@ -47,6 +47,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host 	  = "${self.access_ip_v4}"
     }
   }
 
@@ -60,6 +61,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${self.access_ip_v4}"
     }
   }
   
@@ -71,6 +73,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${self.access_ip_v4}"
     }
   }
 
@@ -83,6 +86,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${self.access_ip_v4}"
     }
   }
 
@@ -95,6 +99,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${self.access_ip_v4}"
     }
   }
 
@@ -111,6 +116,7 @@ block_device {
       private_key = "${file(var.private_key_path)}"
       user        = "centos"
       timeout     = "5m"
+      host        = "${self.access_ip_v4}"
     }
   }
 }

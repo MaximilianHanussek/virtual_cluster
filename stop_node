@@ -2,7 +2,7 @@
 
 rc_file_path=$1                                 #Get OpenStack rc file path as cmd line input
 search_line_number=$(grep -n "unicore-master" terraform/terraform.tfstate | cut -f1 -d:)								#Get line number, after master information starts
-IP_MASTER_NODE=$(tail -n +$search_line_number terraform/terraform.tfstate | grep "network.0.fixed_ip_v4" | awk -F ': "' '{print $2}' | head -c -3)	#Get public IP of master node
+IP_MASTER_NODE=$(tail -n +$search_line_number terraform/terraform.tfstate | grep "fixed_ip_v4" | awk -F ': "' '{print $2}' | head -c -3)	#Get public IP of master node
 SSH_PATH_LOCAL="/home/centos/.ssh/connection_key.pem"													#Get path to internal SSH key in master node
 SSH_PATH_MASTER=$(awk '/private_key_path/{getline; print}' terraform/vars.tf | awk -F ' = "' '{print $2}' | head -c -2)					#Get path to SSH key to master node
 HIGHEST_USED_NODE_NAME=$(ssh -n -o StrictHostKeyChecking=no -i $SSH_PATH_MASTER centos@$IP_MASTER_NODE tail -n 1 /etc/hosts | awk -F' ' '{print $2}')	#Get node name to remove

@@ -43,10 +43,14 @@ variable "security_groups" {
 }
 
 variable "network" {
-  default = [
-    {
-      name = "demo_external"
-    },
-  ]
+  default = "demo_external"
 }
+
+#variable "network" {
+#  default = [
+#    {
+#      name = "demo_external"
+#    },
+#  ]
+#}
 

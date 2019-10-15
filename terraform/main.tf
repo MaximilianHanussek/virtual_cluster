@@ -425,7 +425,7 @@ block_device {
   provisioner "remote-exec" {
     inline = [
       "sudo mv /home/centos/beeond /opt/beegfs/sbin/beeond",
-      "sudo mv /home/centos/beegfs-ondemand-stoplocal /opt/beegfs//lib/beegfs-ondemand-stoplocal",
+      "sudo mv /home/centos/beegfs-ondemand-stoplocal /opt/beegfs/lib/beegfs-ondemand-stoplocal",
       "sudo chmod 777 /opt/beegfs/sbin/beeond",
       "sudo chmod 777 /opt/beegfs/lib/beegfs-ondemand-stoplocal"
     ]
