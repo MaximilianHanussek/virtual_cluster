@@ -45,12 +45,3 @@ variable "security_groups" {
 variable "network" {
   default = "demo_external"
 }
-
-#variable "network" {
-#  default = [
-#    {
-#      name = "demo_external"
-#    },
-#  ]
-#}
-
