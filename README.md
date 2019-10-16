@@ -32,7 +32,7 @@ This section will list the most up to date and tested images for the master and 
 
 
 ## Installation and Usage
-The following information will help you to setup and use the virtual UNICORE cluster. This guide is tested for Linux on CentOS7 with Terraform version 0.11.13. 
+The following information will help you to setup and use the virtual UNICORE cluster. This guide is tested for Linux on CentOS7 with Terraform version 0.12.10. 
 
 ### 1. Download/clone the git repository
 In order to use the sources you need to download or clone this git repository to your local machine.
