@@ -119,4 +119,20 @@ block_device {
       host        = "${self.access_ip_v4}"
     }
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl stop rpcbind.service",
+      "sudo systemctl disable rpcbind.service",
+      "sudo yum remove rpcbind -y"
+    ]
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+      host        = "${self.access_ip_v4}"
+    }
+  }
 }
