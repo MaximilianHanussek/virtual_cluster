@@ -318,6 +318,22 @@ block_device {
       host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
     }
   }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl stop rpcbind.service",
+      "sudo systemctl disable rpcbind.service",
+      "sudo yum remove rpcbind -y"
+    ]
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+      host        = "${openstack_compute_instance_v2.master.access_ip_v4}"
+    }
+  }
 }
 
 resource "openstack_compute_instance_v2" "compute" {
@@ -358,7 +374,7 @@ block_device {
 #    boot_index            = -1
 #    delete_on_termination = true
 #  }
-  
+
   provisioner "remote-exec" {
     script = "mount_cinder_volumes.sh"
     
@@ -436,6 +452,22 @@ block_device {
       user        = "centos"
       timeout     = "5m"
       host         = "${self.access_ip_v4}"
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo systemctl stop rpcbind.service",
+      "sudo systemctl disable rpcbind.service",
+      "sudo yum remove rpcbind -y"
+    ]
+
+    connection {
+      type        = "ssh"
+      private_key = "${file(var.private_key_path)}"
+      user        = "centos"
+      timeout     = "5m"
+      host        = "${self.access_ip_v4}"
     }
   }
 }
